@@ -36,7 +36,7 @@ let sketch = function (p: p5) {
         Engine.update(engine, 10);
 
         p.background(0);
-        p.fill(255);
+        p.fill("green");
 
         // Draw all bodies
         // p5 and matter js meeting
