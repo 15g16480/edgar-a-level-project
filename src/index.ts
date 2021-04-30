@@ -22,7 +22,7 @@ let sketch = function (p: p5) {
 
         engine = Engine.create();
         // create two boxes and a ground
-        boxA = Bodies.rectangle(400, 200, 80, 80);
+        boxA = Bodies.rectangle(400, 200, 80, 80, {});
         boxB = Bodies.rectangle(400, 250, 80, 80);
         groundA = Bodies.rectangle(400, 410, 810, 60, { isStatic: true });
         groundB = Bodies.rectangle(1000, 670, 810, 60, { isStatic: true });
@@ -58,8 +58,20 @@ let sketch = function (p: p5) {
             Matter.Body.applyForce(boxA, boxA.position, { x: +0.01, y: 0 });
         }
         if (p.keyIsDown(p.DOWN_ARROW)) {
-          Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.1 });
-      }
+            Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.1 });
+        } 
+        if (p.keyIsDown(87)) {
+            Matter.Body.applyForce(boxA, boxA.position, { x: 0, y: -0.01 });
+        }
+        if (p.keyIsDown(65)) {
+            Matter.Body.applyForce(boxA, boxA.position, { x: -0.01, y: 0 });
+        }
+        if (p.keyIsDown(68)) {
+            Matter.Body.applyForce(boxA, boxA.position, { x: +0.01, y: 0 });
+        }
+        if (p.keyIsDown(83)) {
+            Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.1 });
+        }
     };
 };
 
