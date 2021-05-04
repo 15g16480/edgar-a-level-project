@@ -18,11 +18,11 @@ let sketch = function (p: p5) {
     let finish: Matter.Body;
 
     p.setup = function () {
-        p.createCanvas(1400, 1400);
+        p.createCanvas(1400, 1000);
 
         engine = Engine.create();
         // create two boxes and a ground
-        boxA = Bodies.rectangle(400, 200, 80, 80, {});
+        boxA = Bodies.rectangle(400, 200, 80, 80);
         boxB = Bodies.rectangle(400, 250, 80, 80);
         groundA = Bodies.rectangle(400, 410, 810, 60, { isStatic: true });
         groundB = Bodies.rectangle(1000, 670, 810, 60, { isStatic: true });
