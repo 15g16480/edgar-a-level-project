@@ -72,6 +72,30 @@ let sketch = function (p: p5) {
         if (p.keyIsDown(83)) {
             Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.1 });
         }
+        //if (p.keyIsDown(69)) {
+        //    engine.world.gravity.y = -1;
+        //}
+        let toggle = function() {
+            let on = false;
+            return function() {
+            if(!on) {
+                on = true;
+                engine.world.gravity.y = -1;
+                return;
+            }
+            //Do stuff if OFF
+            on = false;
+        }
+        }();
+        
+        toggle(); //Set OFF as default    
+        
+        document.addEventListener('keydown',function(e) {
+           var key = e.keyCode || e.which;
+           if(key === 69) {
+              toggle();
+           }
+        }, false);
     };
 };
 
