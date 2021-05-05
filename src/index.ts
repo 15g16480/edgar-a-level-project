@@ -48,18 +48,6 @@ let sketch = function (p: p5) {
             p.endShape(p.CLOSE);
         });
 
-        if (p.keyIsDown(p.UP_ARROW)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: 0, y: -0.01 });
-        }
-        if (p.keyIsDown(p.LEFT_ARROW)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: -0.01, y: 0 });
-        }
-        if (p.keyIsDown(p.RIGHT_ARROW)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: +0.01, y: 0 });
-        }
-        if (p.keyIsDown(p.DOWN_ARROW)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.1 });
-        } 
         if (p.keyIsDown(87)) {
             Matter.Body.applyForce(boxA, boxA.position, { x: 0, y: -0.01 });
         }
@@ -75,25 +63,28 @@ let sketch = function (p: p5) {
         //if (p.keyIsDown(69)) {
         //    engine.world.gravity.y = -1;
         //}
-        let toggle = function() {
+        //if (!p.keyIsDown(69)) {
+        //    engine.world.gravity.y = 1;
+        //}
+        let ontoggle = function() {
             let on = false;
             return function() {
-            if(!on) {
+            if(on) {
                 on = true;
                 engine.world.gravity.y = -1;
                 return;
             }
             //Do stuff if OFF
-            on = false;
+            !on = false;
         }
         }();
         
-        toggle(); //Set OFF as default    
+        ontoggle(); //Set OFF as default    
         
         document.addEventListener('keydown',function(e) {
            var key = e.keyCode || e.which;
            if(key === 69) {
-              toggle();
+              ontoggle();
            }
         }, false);
     };
