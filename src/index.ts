@@ -66,27 +66,32 @@ let sketch = function (p: p5) {
         //if (!p.keyIsDown(69)) {
         //    engine.world.gravity.y = 1;
         //}
-        let ontoggle = function() {
-            let on = false;
-            return function() {
-            if(on) {
-                on = true;
-                engine.world.gravity.y = -1;
-                return;
-            }
-            //Do stuff if OFF
-            !on = false;
+        let tgl = "on"
+
+        function ToggleON() {
+          console.log("on");
+        tgl = "off"
         }
-        }();
-        
-        ontoggle(); //Set OFF as default    
-        
-        document.addEventListener('keydown',function(e) {
-           var key = e.keyCode || e.which;
-           if(key === 69) {
-              ontoggle();
-           }
-        }, false);
+
+        function ToggleOFF() {
+            console.log("off");
+          tgl = "on"
+        }
+
+        document.addEventListener('keydown',function(e){
+         var key = e.keyCode || e.which;
+         if(key == 69){
+          if (tgl == "on") {
+            engine.world.gravity.y = -1;
+            ToggleON();
+        }
+
+        else {
+            engine.world.gravity.y = 1;
+            ToggleOFF();
+        } 
+    }
+});
     };
 };
 
