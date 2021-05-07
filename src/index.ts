@@ -22,7 +22,7 @@ let sketch = function (p: p5) {
 
         engine = Engine.create();
         // create two boxes and a ground
-        boxA = Bodies.rectangle(400, 200, 80, 80);
+        boxA = Bodies.rectangle(400, 200, 80, 80, { inertia: Infinity, friction: 0.002});
         boxB = Bodies.rectangle(400, 250, 80, 80);
         groundA = Bodies.rectangle(400, 410, 810, 60, { isStatic: true });
         groundB = Bodies.rectangle(1000, 670, 810, 60, { isStatic: true });
@@ -60,35 +60,13 @@ let sketch = function (p: p5) {
         if (p.keyIsDown(83)) {
             Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.1 });
         }
-        //if (p.keyIsDown(69)) {
-        //    engine.world.gravity.y = -1;
-        //}
-        //if (!p.keyIsUp(69)) {
-        //    engine.world.gravity.y = 1;
-        //}
-        let tgl = "on"
-        function ToggleON() {
-            console.log("on");
-            tgl = "off"
-        }
-        
-        function ToggleOFF() {
-            console.log("off");
-            tgl = "on"
-        }
+        /* afbsdufbsdf
+        asfjsdfjsdfsd */
         
         document.addEventListener('keydown',function(e){
             var key = e.keyCode || e.which;
             if(key == 69){
-                if (tgl == "on") {
-                    ToggleON();
-                    engine.world.gravity.y = 1;
-                }
-        
-                if (tgl == "off") {
-                    ToggleOFF();
-                    engine.world.gravity.y = -1;
-                } 
+                engine.world.gravity.y *= -1;
             }
         });
     };
