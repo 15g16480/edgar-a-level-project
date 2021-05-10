@@ -28,12 +28,13 @@ let sketch = function (p: p5) {
         groundB = Bodies.rectangle(1000, 670, 810, 60, { isStatic: true });
         groundC = Bodies.rectangle(800, 870, 810, 60, { isStatic: true });
         finish = Bodies.circle(800,800,20, { isStatic: true });
-
+        Matter.Body.setMass(boxA, 4)
+        let jumping = true;
         World.add(engine.world, [boxA, boxB, groundA,groundB,groundC,finish]);
     };
 
     p.draw = function () {
-        Engine.update(engine, 10);
+        Engine.update(engine, 30);
 
         p.background(0);
         p.fill("green");
@@ -47,19 +48,24 @@ let sketch = function (p: p5) {
             })
             p.endShape(p.CLOSE);
         });
-
+            
+        }
+        //W
         if (p.keyIsDown(87)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: 0, y: -0.01 });
+            Matter.Body.applyForce(boxA, boxA.position, { x: 0, y: -0.020 });
         }
+        //A
         if (p.keyIsDown(65)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: -0.01, y: 0 });
+            Matter.Body.applyForce(boxA, boxA.position, { x: -0.005, y: 0 });
         }
+        //D
         if (p.keyIsDown(68)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: +0.01, y: 0 });
+            Matter.Body.applyForce(boxA, boxA.position, { x: +0.005, y: 0 });
         }
+        //S
         if (p.keyIsDown(83)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.1 });
-        }
+            Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.01 });
+        //new TouchEvent(boxA, finish)
         /* afbsdufbsdf
         asfjsdfjsdfsd */
         
