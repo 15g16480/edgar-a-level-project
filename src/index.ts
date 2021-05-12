@@ -28,8 +28,8 @@ let sketch = function (p: p5) {
         groundB = Bodies.rectangle(1000, 670, 810, 60, { isStatic: true });
         groundC = Bodies.rectangle(800, 870, 810, 60, { isStatic: true });
         finish = Bodies.circle(800,800,20, { isStatic: true });
-        Matter.Body.setMass(boxA, 4)
-        let jumping = true;
+        //Matter.Body.setMass(boxA, 4)
+        //let jumping = true;
         World.add(engine.world, [boxA, boxB, groundA,groundB,groundC,finish]);
     };
 
@@ -65,17 +65,18 @@ let sketch = function (p: p5) {
         //S
         if (p.keyIsDown(83)) {
             Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.01 });
-        //new TouchEvent(boxA, finish)
-        /* afbsdufbsdf
-        asfjsdfjsdfsd */
         
-        document.addEventListener('keydown',function(e){
-            var key = e.keyCode || e.which;
-            if(key == 69){
-                engine.world.gravity.y *= -1;
-            }
-        });
+        // document.addEventListener('keydown',function(e){
+        //     var key = e.keyCode || e.which;
+        //     if(key == 69){
+        //         engine.world.gravity.y *= -1;
+        //     }
+        // });
     };
+    function touchStarted(){
+        if (boxA = finish)
+            console.log('finished')
+    }
 };
 
 let myp5 = new p5(sketch);
