@@ -16,6 +16,7 @@ let sketch = function (p: p5) {
     let groundB: Matter.Body;
     let groundC: Matter.Body;
     let finish: Matter.Body;
+    let cam;
 
     p.setup = function () {
         p.createCanvas(1400, 1000);
@@ -28,9 +29,12 @@ let sketch = function (p: p5) {
         groundB = Bodies.rectangle(1000, 670, 810, 60, { isStatic: true });
         groundC = Bodies.rectangle(800, 870, 810, 60, { isStatic: true });
         finish = Bodies.circle(800,800,20, { isStatic: true });
+        cam = createCamera();
         //Matter.Body.setMass(boxA, 4)
         //let jumping = true;
         World.add(engine.world, [boxA, boxB, groundA,groundB,groundC,finish]);
+        // cam = createCamera();
+        // cam.pan(0.8);
     };
 
     p.draw = function () {
@@ -70,12 +74,14 @@ let sketch = function (p: p5) {
             var key = e.keyCode || e.which;
             if(key == 69){
                 engine.world.gravity.y *= -1;
-            }
+            }          
         });
-        function touchStarted(){
-        if (boxA = finish)
+
+        /*function touchStarted(){
+        if (boxA == finish)
             console.log('finished')
-        }
+        }*/
+    
     }
 };
     
