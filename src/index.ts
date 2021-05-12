@@ -49,7 +49,6 @@ let sketch = function (p: p5) {
             p.endShape(p.CLOSE);
         });
             
-        }
         //W
         if (p.keyIsDown(87)) {
             Matter.Body.applyForce(boxA, boxA.position, { x: 0, y: -0.020 });
@@ -65,18 +64,20 @@ let sketch = function (p: p5) {
         //S
         if (p.keyIsDown(83)) {
             Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.01 });
-        
-        // document.addEventListener('keydown',function(e){
-        //     var key = e.keyCode || e.which;
-        //     if(key == 69){
-        //         engine.world.gravity.y *= -1;
-        //     }
-        // });
-    };
-    function touchStarted(){
+        }
+        //this changes gravity on toggle of E
+        document.addEventListener('keydown',function(e){
+            var key = e.keyCode || e.which;
+            if(key == 69){
+                engine.world.gravity.y *= -1;
+            }
+        });
+        function touchStarted(){
         if (boxA = finish)
             console.log('finished')
+        }
     }
 };
+    
 
 let myp5 = new p5(sketch);
