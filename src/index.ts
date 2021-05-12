@@ -16,11 +16,13 @@ let sketch = function (p: p5) {
     let groundB: Matter.Body;
     let groundC: Matter.Body;
     let finish: Matter.Body;
-    let cam;
+    let camera: any;
 
     p.setup = function () {
-        p.createCanvas(1400, 1000);
-
+        
+         p.createCanvas(1400, 1000);
+        //   camera = p.createCamera();
+        //   p.setCamera(camera);
         engine = Engine.create();
         // create two boxes and a ground
         boxA = Bodies.rectangle(400, 200, 80, 80, { inertia: Infinity, friction: 0.002});
@@ -29,17 +31,21 @@ let sketch = function (p: p5) {
         groundB = Bodies.rectangle(1000, 670, 810, 60, { isStatic: true });
         groundC = Bodies.rectangle(800, 870, 810, 60, { isStatic: true });
         finish = Bodies.circle(800,800,20, { isStatic: true });
-        cam = createCamera();
-        //Matter.Body.setMass(boxA, 4)
+        Matter.Body.setMass(boxA, 4)
         //let jumping = true;
         World.add(engine.world, [boxA, boxB, groundA,groundB,groundC,finish]);
         // cam = createCamera();
         // cam.pan(0.8);
     };
-
+    // p.mousePressed = function() {
+    //     if (p.mouseX > 0 && p.mouseX < 100 && p.mouseY > 0 && p.mouseY < 100) {
+    //       let fs = p.fullscreen();
+    //       p.fullscreen(!fs);
+    //     }
+    //   }
     p.draw = function () {
         Engine.update(engine, 30);
-
+        //camera.lookAt(0, 0);
         p.background(0);
         p.fill("green");
 
