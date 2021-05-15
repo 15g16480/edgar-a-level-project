@@ -21,25 +21,24 @@ let sketch = function (p: p5) {
 
     p.setup = function () {
         MOVE_LEFT = Matter.Vector.create(-1,0)
-        p.createCanvas(p.windowWidth, p.windowHeight);
+        p.createCanvas(p.windowWidth + 50, p.windowHeight + 50);
         engine = Engine.create();
         // create two boxes and a ground
         boxA = Bodies.rectangle(400, 200, 80, 80, { inertia: Infinity, friction: 0.002 });
         boxB = Bodies.rectangle(400, 250, 80, 80);
         groundA = Bodies.rectangle(400, 410, 810, 60, { isStatic: true });
-        groundB = Bodies.rectangle(1000, 670, 810, 60, { isStatic: true });
-        //groundC = Bodies.rectangle(800, 870, 810, 60, { isStatic: true });
+        groundB = Bodies.rectangle(800, 670, 600, 60, { isStatic: true });
+        groundC = Bodies.rectangle(1600, 670, 810, 60, { isStatic: true });
         //finish = Bodies.circle(800, 800, 20, { isStatic: true });
         Matter.Body.setMass(boxA, 4)
         //let jumping = true;
-        World.add(engine.world, [boxA, boxB, groundA, groundB/*, groundC, finish*/]);
+        World.add(engine.world, [boxA, boxB, groundA, groundB, groundC/*, finish*/]);
         Matter.Body.applyForce(boxB, {x: boxB.position.x, y: boxB.position.y}, {x: 0.05, y: 0});
     };
     //     }
     //   }
     p.draw = function () {
         Engine.update(engine, 30);
-        //camera.lookAt(0, 0);
         p.background(0);
         p.fill("green");
 
@@ -54,7 +53,7 @@ let sketch = function (p: p5) {
         });
 
         //W
-        if (p.keyIsDown(87)) {
+        if (p.keyIsDown(87) && boxA) {
             Matter.Body.applyForce(boxA, boxA.position, { x: 0, y: -0.005 });
         }
         //A
@@ -71,7 +70,13 @@ let sketch = function (p: p5) {
         }
 
 
-
+        /*Matter.Events.on(engine, 'collisionStart', function(event) {
+            // We know there was a collision so fetch involved elements ...
+            var aElm = document.getElementById(event.pairs[0].bodyA.elementId);
+            var bElm = document.getElementById(event.pairs[0].bodyB.elementId);
+            // Now do something with the event and elements ... your task ;-)
+        });
+        Matter.Detector.collisions({boxA, groundA}, {boxA, groundB}, {boxA, groundC}, engine)*/
         /*function touchStarted(){
         if (boxA == finish)
             console.log('finished')
@@ -84,10 +89,16 @@ let sketch = function (p: p5) {
        if (p.keyCode == 69) {
             engine.world.gravity.y *= -1;
         }
+        //fullscreens on P
         if(p.keyCode == 80) {
             let fs = p.fullscreen();
            p.fullscreen(!fs);
         }
+    }
+    function scrollWrapper(x: any, y: any){
+        var wrapper = document.getElementById('wrapper');  
+        wrapper.scrollTop = x;
+        wrapper.scrollLeft = y;
     }
 };
 
