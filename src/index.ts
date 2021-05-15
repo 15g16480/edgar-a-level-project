@@ -17,30 +17,24 @@ let sketch = function (p: p5) {
     let groundC: Matter.Body;
     let finish: Matter.Body;
     let camera: any;
+    let MOVE_LEFT: Matter.Vector;
 
     p.setup = function () {
-        
-         p.createCanvas(1400, 1000);
-        //   camera = p.createCamera();
-        //   p.setCamera(camera);
+        MOVE_LEFT = Matter.Vector.create(-1,0)
+        p.createCanvas(p.windowWidth, p.windowHeight);
         engine = Engine.create();
         // create two boxes and a ground
-        boxA = Bodies.rectangle(400, 200, 80, 80, { inertia: Infinity, friction: 0.002});
+        boxA = Bodies.rectangle(400, 200, 80, 80, { inertia: Infinity, friction: 0.002 });
         boxB = Bodies.rectangle(400, 250, 80, 80);
         groundA = Bodies.rectangle(400, 410, 810, 60, { isStatic: true });
         groundB = Bodies.rectangle(1000, 670, 810, 60, { isStatic: true });
-        groundC = Bodies.rectangle(800, 870, 810, 60, { isStatic: true });
-        finish = Bodies.circle(800,800,20, { isStatic: true });
+        //groundC = Bodies.rectangle(800, 870, 810, 60, { isStatic: true });
+        //finish = Bodies.circle(800, 800, 20, { isStatic: true });
         Matter.Body.setMass(boxA, 4)
         //let jumping = true;
-        World.add(engine.world, [boxA, boxB, groundA,groundB,groundC,finish]);
-        // cam = createCamera();
-        // cam.pan(0.8);
+        World.add(engine.world, [boxA, boxB, groundA, groundB/*, groundC, finish*/]);
+        Matter.Body.applyForce(boxB, {x: boxB.position.x, y: boxB.position.y}, {x: 0.05, y: 0});
     };
-    // p.mousePressed = function() {
-    //     if (p.mouseX > 0 && p.mouseX < 100 && p.mouseY > 0 && p.mouseY < 100) {
-    //       let fs = p.fullscreen();
-    //       p.fullscreen(!fs);
     //     }
     //   }
     p.draw = function () {
@@ -58,38 +52,44 @@ let sketch = function (p: p5) {
             })
             p.endShape(p.CLOSE);
         });
-            
+
         //W
         if (p.keyIsDown(87)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: 0, y: -0.020 });
+            Matter.Body.applyForce(boxA, boxA.position, { x: 0, y: -0.005 });
         }
         //A
         if (p.keyIsDown(65)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: -0.005, y: 0 });
+            Matter.Body.applyForce(boxA, boxA.position, { x: -0.002, y: 0 });
         }
         //D
         if (p.keyIsDown(68)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: +0.005, y: 0 });
+            Matter.Body.applyForce(boxA, boxA.position, { x: +0.002, y: 0 });
         }
         //S
         if (p.keyIsDown(83)) {
-            Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.01 });
+            Matter.Body.applyForce(boxA, boxA.position, { x: 0.00, y: 0.005 });
         }
-        //this changes gravity on toggle of E
-        document.addEventListener('keydown',function(e){
-            var key = e.keyCode || e.which;
-            if(key == 69){
-                engine.world.gravity.y *= -1;
-            }          
-        });
+
+
 
         /*function touchStarted(){
         if (boxA == finish)
             console.log('finished')
         }*/
+
+    }
     
+    p.keyPressed = function () {
+       //this changes gravity on toggle of E 
+       if (p.keyCode == 69) {
+            engine.world.gravity.y *= -1;
+        }
+        if(p.keyCode == 80) {
+            let fs = p.fullscreen();
+           p.fullscreen(!fs);
+        }
     }
 };
-    
+
 
 let myp5 = new p5(sketch);
