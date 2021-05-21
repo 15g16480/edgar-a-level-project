@@ -6,20 +6,23 @@ import * as Matter from 'matter-js';
 var Engine = Matter.Engine,
     World = Matter.World,
     Bodies = Matter.Bodies;
+var SAT: any = (Matter as any).SAT
 
 let sketch = function (p: p5) {
     // create an engine
     let engine: Matter.Engine;
     let player: Matter.Body;
-    let boxB: Matter.Body;
+    //let boxB: Matter.Body;
     let groundA: Matter.Body;
     let groundB: Matter.Body;
     let groundC: Matter.Body;
+    let groundD: Matter.Body;
     let finish: Matter.Body;
     let MOVE_LEFT: Matter.Vector;
     let pg: any;
     const LEVEL_WIDTH = 10000;
-    let playerGrounded:any;
+    let playerGrounded = false;
+    let buttonCD = 0;
 
     p.setup = function () {
         p.frameRate(60);
@@ -27,13 +30,15 @@ let sketch = function (p: p5) {
         engine = Engine.create();
         // create two boxes and a ground
         player = Bodies.rectangle(400, 250, 40, 40, { inertia: Infinity, friction: 0.002 });
-        boxB = Bodies.rectangle(400, 100, 40, 40);
-        groundA = Bodies.rectangle(400, 410, 810, 30, { isStatic: true });
+        /*boxB = Bodies.rectangle(400, 100, 40, 40);*/
+        groundA = Bodies.rectangle(400, 410, 810, 10, { isStatic: true });
         groundB = Bodies.rectangle(800, 670, 600, 30, { isStatic: true });
         groundC = Bodies.rectangle(1600, 670, 810, 30, { isStatic: true });
+        groundD = Bodies.rectangle(1600, 730, 810, 30, { isStatic: true });
         finish = Bodies.circle(800, 700, 20, { isStatic: true });
         Matter.Body.setMass(player, 4)
-        World.add(engine.world, [player, boxB, groundA, groundB, groundC, finish]);
+        World.add(engine.world, [player, /*boxB,*/ groundA, groundB, groundC, groundD, finish]);
+
     };
     //     }
     //   }
@@ -41,7 +46,7 @@ let sketch = function (p: p5) {
         Engine.update(engine, 30);
         p.background(0);
         p.fill("green");
-        p.translate(-player.position.x + innerWidth/2, 0/*-player.position.y + innerHeight/2*/)
+        p.translate(-player.position.x + innerWidth / 2, 0/*-player.position.y + innerHeight/2*/)
 
         // Draw all bodies
         // p5 and matter js meeting
@@ -53,13 +58,35 @@ let sketch = function (p: p5) {
             p.endShape(p.CLOSE);
         });
         //check if grouded
-        if ((player.position.y == groundA.position.y +30) /*&& player.position.x>410 || player.position.x>1220*/){
-            playerGrounded = true
+        /*if (player.position.y == 385.0500009000009 && player.position.x > 0 || player.position.x > 1220) {
+            playerGrounded = true;
+        }
+        else {
+            playerGrounded = false;
+        }*/
+        let collisionA = SAT.collides(player, groundA);
+        let collisionB = SAT.collides(player, groundB);
+        let collisionC = SAT.collides(player, groundC);
+        let collisionD = SAT.collides(player, groundD);
+        if (collisionA.collided) {
+            playerGrounded = true;
+        }
+        else if (collisionB.collided) {
+            playerGrounded = true;
+        }
+        else if (collisionC.collided) {
+            playerGrounded = true;
+        }
+        else if (collisionD.collided) {
+            playerGrounded = true;
+        }
+        else {
+            playerGrounded = false
         }
 
         //W
         if (p.keyIsDown(87) && playerGrounded == true) {
-            Matter.Body.applyForce(player, player.position, { x: 0, y: -0.02 });
+            Matter.Body.applyForce(player, player.position, { x: 0, y: -0.05 });
         }
         //A
         if (p.keyIsDown(65)) {
@@ -88,9 +115,9 @@ let sketch = function (p: p5) {
             p.fullscreen(!fs);
         }
         //R to reset position
-        /*if (p.keyIsDown(71)) {
-            p.reset();
-        }*/
+        if (p.keyIsDown(71)) {
+            //player.position.x = spawn, player.position.y = spawn ;
+        }
     }
 };
 
