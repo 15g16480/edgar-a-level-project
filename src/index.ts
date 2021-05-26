@@ -17,12 +17,14 @@ let sketch = function (p: p5) {
     let groundB: Matter.Body;
     let groundC: Matter.Body;
     let groundD: Matter.Body;
-    let finish: Matter.Body;
-    let MOVE_LEFT: Matter.Vector;
-    let pg: any;
-    const LEVEL_WIDTH = 10000;
+    let gravPower: Matter.Body;
+    let sjumpPower: Matter.Body;
     let playerGrounded = false;
     let buttonCD = 0;
+    let hasGrav = false;
+    let hasSJump = false;
+    let lives = 5
+
 
     p.setup = function () {
         p.frameRate(60);
@@ -35,9 +37,10 @@ let sketch = function (p: p5) {
         groundB = Bodies.rectangle(800, 670, 600, 30, { isStatic: true });
         groundC = Bodies.rectangle(1600, 670, 810, 30, { isStatic: true });
         groundD = Bodies.rectangle(1600, 730, 810, 30, { isStatic: true });
-        finish = Bodies.circle(800, 700, 20, { isStatic: true });
+        gravPower = Bodies.circle(800, 620, 20, { isStatic: true });
+        sjumpPower = Bodies.circle(900, 620, 20, { isStatic: true });
         Matter.Body.setMass(player, 4)
-        World.add(engine.world, [player, /*boxB,*/ groundA, groundB, groundC, groundD, finish]);
+        World.add(engine.world, [player, /*boxB,*/ groundA, groundB, groundC, groundD, gravPower, sjumpPower]);
 
     };
     //     }
@@ -58,12 +61,6 @@ let sketch = function (p: p5) {
             p.endShape(p.CLOSE);
         });
         //check if grouded
-        /*if (player.position.y == 385.0500009000009 && player.position.x > 0 || player.position.x > 1220) {
-            playerGrounded = true;
-        }
-        else {
-            playerGrounded = false;
-        }*/
         let collisionA = SAT.collides(player, groundA);
         let collisionB = SAT.collides(player, groundB);
         let collisionC = SAT.collides(player, groundC);
@@ -83,7 +80,25 @@ let sketch = function (p: p5) {
         else {
             playerGrounded = false
         }
-
+        //Gravity power
+        let collisionGrav = SAT.collides(player, gravPower);
+        if (collisionGrav.collided && p.keyIsDown(81)) {
+            hasGrav = true
+            Matter.Composite.remove(engine.world, gravPower)
+        }
+        else if (collisionGrav.collided && p.keyIsDown(81) && hasSJump == true) {
+            hasGrav = true
+            Matter.Composite.add(engine.world, sjumpPower)
+        }
+        let collisionSJump = SAT.collides(player, sjumpPower);
+        if (collisionSJump.collided && p.keyIsDown(81)) {
+            hasSJump = true
+            Matter.Composite.remove(engine.world, sjumpPower)
+        }
+        else if (collisionSJump.collided && p.keyIsDown(81) && hasGrav == true) {
+            hasSJump = true
+            Matter.Composite.add(engine.world, gravPower)
+        }
         //W
         if (p.keyIsDown(87) && playerGrounded == true) {
             Matter.Body.applyForce(player, player.position, { x: 0, y: -0.05 });
@@ -96,18 +111,23 @@ let sketch = function (p: p5) {
         if (p.keyIsDown(68)) {
             Matter.Body.applyForce(player, player.position, { x: +0.002, y: 0 });
         }
+        /*
         //S
         if (p.keyIsDown(83)) {
             Matter.Body.applyForce(player, player.position, { x: 0.00, y: 0.005 });
         }
-
+        */
 
     }
 
     p.keyPressed = function () {
         //this changes gravity on toggle of E 
-        if (p.keyCode == 69) {
+        if (p.keyCode == 69 && hasGrav == true) {
             engine.world.gravity.y *= -1;
+        }
+        //super jump
+        if (p.keyCode == 87 && hasSJump == true) {
+            Matter.Body.applyForce(player, player.position, { x: 0, y: -0.1 });
         }
         //fullscreens on P
         if (p.keyCode == 80) {
