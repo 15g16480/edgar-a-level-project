@@ -121,10 +121,7 @@ let sketch = function (p: p5) {
             death = true
         }
         if (death == true){
-            player.position.x = spawnx
-            player.position.y = spawny
-            player.velocity.x = 0
-            player.velocity.y = 0
+            Matter.Body.translate(player, { x: spawnx-player.position.x, y: spawny-player.position.y });
         }
         if (collisionmob.collided && Math.round(player.position.y) == Math.round(mobA.position.y) - 39) {
             console.log('works')
@@ -132,13 +129,13 @@ let sketch = function (p: p5) {
         else if (collisionmob.collided && Math.round(player.position.y) == Math.round(mobA.position.y) - 40) {
             console.log('works')
         }
-        else if (collisionmob.collided && Math.round(player.position.y) !== Math.round(mobA.position.y) - 40 && Math.round(player.position.y) !== Math.round(mobA.position.y) - 39) {
+        if (collisionmob.collided && Math.round(player.position.y) !== Math.round(mobA.position.y) - 40 && Math.round(player.position.y) !== Math.round(mobA.position.y) - 39) {
             death = true
         }
         
         //R to reset position
         if (p.keyIsDown(71)) {
-            Matter.Body.translate(player, { x: 0, y: 0 });
+            Matter.Body.translate(player, { x: player.position.x-spawnx, y: player.position.y-spawny });
         }
         //Gravity power
         let collisionGrav = SAT.collides(player, gravPower);
