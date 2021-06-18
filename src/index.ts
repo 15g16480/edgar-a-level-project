@@ -5,20 +5,20 @@ import * as Matter from 'matter-js';
 // module aliases
 var Engine = Matter.Engine,
     World = Matter.World,
-    Bodies = Matter.Bodies,
-    Render = Matter.Render;
+    Bodies = Matter.Bodies;
 var SAT: any = (Matter as any).SAT
 
 let sketch = function (p: p5) {
     // create an engine
     let engine: Matter.Engine;
     let player: Matter.Body;
-    //let boxB: Matter.Body;
-
+    let mobA: Matter.Body;
     let groundA: Matter.Body;
     let groundB: Matter.Body;
     let groundC: Matter.Body;
     let groundD: Matter.Body;
+    let top: Matter.Body;
+    let bottom: Matter.Body;
     let gravPower: Matter.Body;
     let sjumpPower: Matter.Body;
     let playerGrounded = false;
@@ -33,19 +33,28 @@ let sketch = function (p: p5) {
     let jumpTime = 0;
     let jumpTimer = 300;
     let sjumpTimer = 700;
+    let gravTime = 0;
+    let gravTimer = 1000;
+    let death = false;
+    let playerpng;
+    let spawnx = 400;
+    let spawny = 250;
 
     p.setup = function () {
         p.frameRate(60);
-        p.createCanvas(1423, 800);
+        //moves canvas to fit the webpage
+        let cnv = p.createCanvas(window.innerWidth+10, window.innerHeight+99);
+        cnv.position(-10,-20)
         engine = Engine.create();
         //render.options.wireframes = false;
-        // create two boxes and a ground
-        player = Bodies.rectangle(400, 250, 40, 40, {
-            inertia: Infinity, friction: 0.002, render: {
+        // create player
+        player = Bodies.rectangle(spawnx, spawny, 40, 40, {
+            inertia: Infinity, friction: 0.002, 
+            render: {
                 fillStyle: 'red',
                 strokeStyle: 'blue',
-                lineWidth: 3
-            },
+                lineWidth: 3,
+            }
 
             /*sprite: {
                 texture: 'Player.png',
@@ -53,21 +62,21 @@ let sketch = function (p: p5) {
                 yScale: 1
             }*/
         });
-        /*boxB = Bodies.rectangle(400, 100, 40, 40);*/
+        mobA = Bodies.rectangle(900, 300, 40, 40 ,{inertia: Infinity, friction: 0});
         groundA = Bodies.rectangle(400, 410, 810, 30, { isStatic: true });
         groundB = Bodies.rectangle(800, 670, 600, 30, { isStatic: true });
         groundC = Bodies.rectangle(1600, 670, 810, 30, { isStatic: true });
-        groundD = Bodies.rectangle(1600, 730, 810, 30, { isStatic: true });
+        groundD = Bodies.rectangle(1600, 480, 810, 30, { isStatic: true });
+        bottom = Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true });
+        top = Bodies.rectangle(-500, -230, 10000, 500, { isStatic: true });
         gravPower = Bodies.circle(800, 630, 20, { isStatic: true });
         sjumpPower = Bodies.circle(900, 630, 20, { isStatic: true });
         sjumpPower.isSensor = true
         gravPower.isSensor = true
         Matter.Body.setMass(player, 4)
-        World.add(engine.world, [player, /*boxB,*/ groundA, groundB, groundC, groundD, gravPower, sjumpPower]);
+        World.add(engine.world, [player, mobA, groundA, groundB, groundC, groundD, gravPower, sjumpPower, top, bottom]);
 
     };
-    //     }
-    //   }
     p.draw = function () {
         Engine.update(engine, 30);
         p.background(0);
@@ -87,6 +96,9 @@ let sketch = function (p: p5) {
         let collisionB = SAT.collides(player, groundB);
         let collisionC = SAT.collides(player, groundC);
         let collisionD = SAT.collides(player, groundD);
+        let collisionbottom = SAT.collides(player, bottom);
+        let collisiontop = SAT.collides(player, top);
+        let collisionmob = SAT.collides(player, mobA);
         if (collisionA.collided) {
             playerGrounded = true;
         }
@@ -102,6 +114,28 @@ let sketch = function (p: p5) {
         else {
             playerGrounded = false
         }
+        if (collisionbottom.collided) {
+            death = true
+        }
+        if (collisiontop.collided) {
+            death = true
+        }
+        if (death == true){
+            player.position.x = spawnx
+            player.position.y = spawny
+            player.velocity.x = 0
+            player.velocity.y = 0
+        }
+        if (collisionmob.collided && Math.round(player.position.y) == Math.round(mobA.position.y) - 39) {
+            console.log('works')
+        }
+        else if (collisionmob.collided && Math.round(player.position.y) == Math.round(mobA.position.y) - 40) {
+            console.log('works')
+        }
+        else if (collisionmob.collided && Math.round(player.position.y) !== Math.round(mobA.position.y) - 40 && Math.round(player.position.y) !== Math.round(mobA.position.y) - 39) {
+            death = true
+        }
+        
         //R to reset position
         if (p.keyIsDown(71)) {
             Matter.Body.translate(player, { x: 0, y: 0 });
@@ -133,7 +167,7 @@ let sketch = function (p: p5) {
             sjumpPowerInvalid = false;
         }
         //W
-        if (p.keyIsDown(87) && playerGrounded == true && hasSJump == false) {
+        if (p.keyIsDown(87) && playerGrounded == true && hasSJump == false && engine.world.gravity.y == 1) {
             let now = Date.now();
             if ((now - jumpTime) > jumpTimer) {
                 Matter.Body.applyForce(player, player.position, { x: 0, y: -0.05 });
@@ -145,6 +179,14 @@ let sketch = function (p: p5) {
             let now = Date.now();
             if ((now - jumpTime) > sjumpTimer) {
                 Matter.Body.applyForce(player, player.position, { x: 0, y: -0.1 });
+                jumpTime = now;
+            }
+        }
+        //gravity jump
+        if (p.keyIsDown(87) && hasGrav == true && playerGrounded == true && engine.world.gravity.y == -1) {
+            let now = Date.now();
+            if ((now - jumpTime) > jumpTimer) {
+                Matter.Body.applyForce(player, player.position, { x: 0, y: 0.05 });
                 jumpTime = now;
             }
         }
@@ -161,9 +203,13 @@ let sketch = function (p: p5) {
     p.keyPressed = function () {
         //this changes gravity on toggle of E 
         if (p.keyCode == 69 && hasGrav == true) {
-            engine.world.gravity.y *= -1;
+            let now = Date.now();
+            if ((now - gravTime) > gravTimer) {
+                engine.world.gravity.y *= -1;
+                gravTime = now;
+            }
         }
-        //fullscreens on Pd
+        //fullscreens on P
         if (p.keyCode == 80) {
             let fs = p.fullscreen();
             p.fullscreen(!fs);
