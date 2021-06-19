@@ -21,6 +21,7 @@ let sketch = function (p: p5) {
     let bottom: Matter.Body;
     let gravPower: Matter.Body;
     let sjumpPower: Matter.Body;
+    let checkpointA: Matter.Body;
     let playerGrounded = false;
     let buttonCD = 0;
     let hasGrav = false;
@@ -28,14 +29,15 @@ let sketch = function (p: p5) {
     let lives = 5;
     let gravPowerInvalid = false;
     let sjumpPowerInvalid = false;
-    let height = 800;
-    let width = 1423;
     let jumpTime = 0;
     let jumpTimer = 300;
     let sjumpTimer = 700;
     let gravTime = 0;
     let gravTimer = 1000;
+    let collisionFix = 0;
+    let collisionFixer = 1;
     let death = false;
+    let mobADeath =false;
     let playerpng;
     let spawnx = 400;
     let spawny = 250;
@@ -71,10 +73,12 @@ let sketch = function (p: p5) {
         top = Bodies.rectangle(-500, -230, 10000, 500, { isStatic: true });
         gravPower = Bodies.circle(800, 630, 20, { isStatic: true });
         sjumpPower = Bodies.circle(900, 630, 20, { isStatic: true });
+        checkpointA = Bodies.circle(1300, 630, 20, { isStatic: true });
+        checkpointA.isSensor = true
         sjumpPower.isSensor = true
         gravPower.isSensor = true
         Matter.Body.setMass(player, 4)
-        World.add(engine.world, [player, mobA, groundA, groundB, groundC, groundD, gravPower, sjumpPower, top, bottom]);
+        World.add(engine.world, [player, mobA, groundA, groundB, groundC, groundD, gravPower, sjumpPower, top, bottom, checkpointA]);
 
     };
     p.draw = function () {
@@ -121,20 +125,24 @@ let sketch = function (p: p5) {
             death = true
         }
         if (death == true){
-    
-            Matter.Body.translate(player, {
-                x: spawnx - player.position.x,
-                y: spawny - player.position.y
-            });
-
-            
+            let now = Date.now();
+            Matter.Composite.remove(engine.world, player);
+            Matter.Body.translate(player, {x: spawnx - player.position.x, y: spawny - player.position.y});
+            if ((now - collisionFix) > collisionFixer) {
+                Matter.Composite.add(engine.world, player);
+                collisionFix = now;
+            }  
         }
-        if (collisionmob.collided && Math.round(player.position.y) !== Math.round(mobA.position.y) - 40 && Math.round(player.position.y) !== Math.round(mobA.position.y) -39  ) {
-            death = true
+        if (collisionmob.collided && mobADeath ==false) {
+            if(Math.round(player.position.y) >= Math.round(mobA.position.y) - 30){
+                death = true
+            }
+            else {
+                Matter.Composite.remove(engine.world, mobA);
+                mobADeath = true;
+            }
         }
-        else if (collisionmob.collided) {
-            Matter.Composite.remove(engine.world, mobA);
-        }
+        
         if (mobA.position.x>player.position.x) {
             Matter.Body.applyForce(mobA, mobA.position, { x: -0.0001, y: 0 });
         }
@@ -144,15 +152,20 @@ let sketch = function (p: p5) {
 
         //R to reset position
         if (p.keyIsDown(82)) {
-            Matter.Body.translate(player, {
-                x: spawnx - player.position.x,
-                y: spawny - player.position.y
-            });
+            Matter.Body.translate(player, {x: spawnx - player.position.x, y: spawny - player.position.y});
         }
         //Gravity power
         let collisionGrav = SAT.collides(player, gravPower);
         let collisionSJump = SAT.collides(player, sjumpPower);
-
+        let collisionCheckpointA = SAT.collides(player, checkpointA);
+        if (collisionCheckpointA && spawnx !== checkpointA.position.x) {
+            spawnx = checkpointA.position.x;
+            spawny = checkpointA.position.y;
+        }
+        if (player.position.x < checkpointA.position.x) {
+            spawnx = 400
+            spawny = 250
+        }
         if (collisionGrav.collided && p.keyIsDown(81) && gravPowerInvalid == false) {
             hasGrav = true;
             Matter.Composite.remove(engine.world, gravPower);
