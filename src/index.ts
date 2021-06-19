@@ -121,21 +121,33 @@ let sketch = function (p: p5) {
             death = true
         }
         if (death == true){
-            Matter.Body.translate(player, { x: spawnx-player.position.x, y: spawny-player.position.y });
+    
+            Matter.Body.translate(player, {
+                x: spawnx - player.position.x,
+                y: spawny - player.position.y
+            });
+
+            
         }
-        if (collisionmob.collided && Math.round(player.position.y) == Math.round(mobA.position.y) - 39) {
-            console.log('works')
-        }
-        else if (collisionmob.collided && Math.round(player.position.y) == Math.round(mobA.position.y) - 40) {
-            console.log('works')
-        }
-        if (collisionmob.collided && Math.round(player.position.y) !== Math.round(mobA.position.y) - 40 && Math.round(player.position.y) !== Math.round(mobA.position.y) - 39) {
+        if (collisionmob.collided && Math.round(player.position.y) !== Math.round(mobA.position.y) - 40 && Math.round(player.position.y) !== Math.round(mobA.position.y) -39  ) {
             death = true
         }
-        
+        else if (collisionmob.collided) {
+            Matter.Composite.remove(engine.world, mobA);
+        }
+        if (mobA.position.x>player.position.x) {
+            Matter.Body.applyForce(mobA, mobA.position, { x: -0.0001, y: 0 });
+        }
+        else {
+            Matter.Body.applyForce(mobA, mobA.position, { x: 0.0001, y: 0 });
+        }
+
         //R to reset position
-        if (p.keyIsDown(71)) {
-            Matter.Body.translate(player, { x: player.position.x-spawnx, y: player.position.y-spawny });
+        if (p.keyIsDown(82)) {
+            Matter.Body.translate(player, {
+                x: spawnx - player.position.x,
+                y: spawny - player.position.y
+            });
         }
         //Gravity power
         let collisionGrav = SAT.collides(player, gravPower);
@@ -195,6 +207,7 @@ let sketch = function (p: p5) {
         if (p.keyIsDown(68)) {
             Matter.Body.applyForce(player, player.position, { x: +0.002, y: 0 });
         }
+        
     }
 
     p.keyPressed = function () {
@@ -211,13 +224,10 @@ let sketch = function (p: p5) {
             let fs = p.fullscreen();
             p.fullscreen(!fs);
         }
-        //R to reset position
-        /*if (p.keyIsDown(71)) {
-            Matter.Body.translate(player, { x: 0, y: height + (player.bounds.max.y - player.bounds.min.y) });
-            Matter.Body.translate(player, { x: 0, y: -height - (player.bounds.max.y - player.bounds.min.y) });
-            Matter.Body.translate(player, { x: width + (player.bounds.max.x - player.bounds.min.x), y: 0 });
-            Matter.Body.translate(player, { x: -width - (player.bounds.max.x - player.bounds.min.x), y: 0 });
-        }*/
+        //R
+        if (p.keyIsDown(85)) {
+            Matter.Body.applyForce(player, player.position, { x: 0, y: 0 });
+        }
     }
 };
 
