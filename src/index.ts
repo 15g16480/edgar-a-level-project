@@ -74,12 +74,13 @@ let sketch = function (p: p5) {
         });
         mobA = Bodies.rectangle(900, 630, 40, 40, { inertia: Infinity, friction: 0 });
         mobB = Bodies.rectangle(1100, 630, 40, 40, { inertia: Infinity, friction: 0 });
-        groundA = Bodies.rectangle(400, 410, 810, 30, { isStatic: true, render: {
-            fillStyle: 'red',
-            strokeStyle: 'blue',
-            lineWidth: 3
-       }
-   });
+        groundA = Bodies.rectangle(400, 410, 810, 30, {
+            isStatic: true, render: {
+                fillStyle: 'red',
+                strokeStyle: 'blue',
+                lineWidth: 3
+            }
+        });
         groundB = Bodies.rectangle(800, 670, 600, 30, { isStatic: true });
         groundC = Bodies.rectangle(1600, 670, 810, 30, { isStatic: true });
         groundD = Bodies.rectangle(1600, 480, 810, 30, { isStatic: true });
@@ -196,15 +197,38 @@ let sketch = function (p: p5) {
         p.background(0);
         p.translate(-player.position.x + innerWidth / 2, 0/*-player.position.y + innerHeight/2*/)
 
-        // Draw all bodies
-        // p5 and matter js meeting
-        engine.world.bodies.forEach(body => {
+        function drawBody(body: Matter.Body, colour: string) {
+            p.fill(colour);
             p.beginShape()
             body.vertices.forEach(vertex => {
                 p.vertex(vertex.x, vertex.y);
             })
             p.endShape(p.CLOSE);
+        }
+
+        // let player: Matter.Body;
+        // let mobA: Matter.Body;
+        // let mobB: Matter.Body;
+        // let groundA: Matter.Body;
+        // let groundB: Matter.Body;
+        // let groundC: Matter.Body;
+        // let groundD: Matter.Body;
+        // let top: Matter.Body;
+        // let bottom: Matter.Body;
+        // let gravPower: Matter.Body;
+        // let sjumpPower: Matter.Body;
+        // let checkpointA: Matter.Body;
+        // let checkpointB: Matter.Body;
+
+        // Draw all bodies
+        // p5 and matter js meeting
+        engine.world.bodies.forEach(body => {
+            drawBody(body, 'grey');
         });
+
+        drawBody(player, 'green');
+        drawBody(mobA, 'red');
+        drawBody(mobB, 'red');
 
         //mob collision
         let collisionmobA = SAT.collides(player, mobA);
@@ -247,12 +271,12 @@ let sketch = function (p: p5) {
 
         if (livesLost == true) {
             let now = Date.now();
-                if((now - invulnerablity)> invulnerablilityTimer) {
-                    lives = lives - 1
-                    //change color here
-                }
-                invulnerablity = now;
-                livesLost = false
+            if ((now - invulnerablity) > invulnerablilityTimer) {
+                lives = lives - 1
+                //change color here
+            }
+            invulnerablity = now;
+            livesLost = false
         }
         //Player death
         if (death == true) {
@@ -306,7 +330,7 @@ let sketch = function (p: p5) {
         }
 
         //gravity jump
-        if (p.keyIsDown(87) && hasGrav == true && playerGrounded == true && engine.world.gravity.y == -1 && doubleJump ==true) {
+        if (p.keyIsDown(87) && hasGrav == true && playerGrounded == true && engine.world.gravity.y == -1 && doubleJump == true) {
             let now = Date.now();
             if ((now - jumpTime) > jumpTimer) {
                 Matter.Body.applyForce(player, player.position, { x: 0, y: 0.06 });
@@ -340,7 +364,7 @@ let sketch = function (p: p5) {
 
         //Movement
         //W
-        if (p.keyIsDown(87) && playerGrounded == true && hasSJump == false && engine.world.gravity.y == 1 && doubleJump ==true) {
+        if (p.keyIsDown(87) && playerGrounded == true && hasSJump == false && engine.world.gravity.y == 1 && doubleJump == true) {
             let now = Date.now();
             if ((now - jumpTime) > jumpTimer) {
                 Matter.Body.applyForce(player, player.position, { x: 0, y: -0.06 });
@@ -354,9 +378,9 @@ let sketch = function (p: p5) {
                 doubleJump = false;
                 jumpTime = now;
             }
-            
+
         }
-        if (playerGrounded == true){
+        if (playerGrounded == true) {
             doubleJump = true;
         }
         //A
