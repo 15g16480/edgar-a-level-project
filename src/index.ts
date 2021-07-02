@@ -19,6 +19,10 @@ let sketch = function (p: p5) {
     let groundB: Matter.Body;
     let groundC: Matter.Body;
     let groundD: Matter.Body;
+    let groundE: Matter.Body;
+    let groundF: Matter.Body;
+    let groundG: Matter.Body;
+    let groundH: Matter.Body;
     let top: Matter.Body;
     let bottom: Matter.Body;
     let gravPower: Matter.Body;
@@ -59,7 +63,7 @@ let sketch = function (p: p5) {
         //render.options.wireframes = false;
         // create player
         player = Bodies.rectangle(spawnx, spawny, 40, 40, {
-            inertia: Infinity, friction: 0.002,
+            inertia: Infinity, friction: 0.000,
             render: {
                 fillStyle: 'red',
                 strokeStyle: 'blue',
@@ -84,6 +88,10 @@ let sketch = function (p: p5) {
         groundB = Bodies.rectangle(800, 670, 600, 30, { isStatic: true });
         groundC = Bodies.rectangle(1600, 670, 810, 30, { isStatic: true });
         groundD = Bodies.rectangle(1600, 480, 810, 30, { isStatic: true });
+        /*groundE = Bodies.rectangle(400, 1000, 810, 30, { isStatic: true });
+        groundF = Bodies.rectangle(1600, 480, 810, 30, { isStatic: true });
+        groundG = Bodies.rectangle(1600, 480, 810, 30, { isStatic: true });
+        groundH = Bodies.rectangle(1600, 480, 810, 30, { isStatic: true });*/
         bottom = Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true });
         top = Bodies.rectangle(-500, -230, 10000, 500, { isStatic: true });
         gravPower = Bodies.circle(800, 630, 20, { isStatic: true });
@@ -95,7 +103,7 @@ let sketch = function (p: p5) {
         sjumpPower.isSensor = true
         gravPower.isSensor = true
         Matter.Body.setMass(player, 4)
-        World.add(engine.world, [player, mobA, mobB, groundA, groundB, groundC, groundD, gravPower, sjumpPower, top, bottom, checkpointA, checkpointB]);
+        World.add(engine.world, [player, mobA, mobB, groundA, groundB, groundC, groundD, /*groundE, groundF, groundG, groundH,*/ gravPower, sjumpPower, top, bottom, checkpointA, checkpointB]);
 
         //collisions for checkpoint saving
         Matter.Events.on(engine, "collisionEnd", function (event) {
@@ -191,10 +199,13 @@ let sketch = function (p: p5) {
         //             }
         //         });
         // });
+        p.fill(220)
+        p.text('whagwan',10,10,70,80)
     };
     p.draw = function () {
         Engine.update(engine, 30);
-        p.background(0);
+        p.background(51);
+        p.frameRate(60)
         p.translate(-player.position.x + innerWidth / 2, 0/*-player.position.y + innerHeight/2*/)
 
         function drawBody(body: Matter.Body, colour: string) {
