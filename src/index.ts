@@ -2,28 +2,6 @@ import * as p5 from 'p5';
 
 import * as Matter from 'matter-js';
 
-import Power from './components/power'
-import Movement from './components/movement'
-
-const components = [
-    {
-        class:Power,
-        selector: '.power'
-    },
-    {
-        class:Movement,
-        selector: '.movement'
-    }
-]
-
-components.forEach(component => {
-if(document.querySelector(component.selector) !== null ) {
-    document.querySelectorAll(component.selector).forEach(
-        element => new component.class()
-    )
-}
-})
-
 // module aliases
 var Engine = Matter.Engine,
     World = Matter.World,
