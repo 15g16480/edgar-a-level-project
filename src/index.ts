@@ -2,6 +2,28 @@ import * as p5 from 'p5';
 
 import * as Matter from 'matter-js';
 
+import Power from './components/power'
+import Movement from './components/movement'
+
+const components = [
+    {
+        class:Power,
+        selector: '.power'
+    },
+    {
+        class:Movement,
+        selector: '.movement'
+    }
+]
+
+components.forEach(component => {
+if(document.querySelector(component.selector) !== null ) {
+    document.querySelectorAll(component.selector).forEach(
+        element => new component.class()
+    )
+}
+})
+
 // module aliases
 var Engine = Matter.Engine,
     World = Matter.World,
@@ -298,6 +320,7 @@ let sketch = function (p: p5) {
         if (death == true) {
             Matter.Body.translate(player, { x: spawnx - player.position.x, y: spawny - player.position.y });
             death = false
+            lives = 3
         }
 
         //mob targetting
@@ -398,7 +421,7 @@ let sketch = function (p: p5) {
         }
         if (playerGrounded == true){
             doubleJump = true;
-            console.log(player.position.x,player.position.y)
+            console.log(Math.round(player.position.x),Math.round(player.position.y))
         }
         //A
         if (p.keyIsDown(65)) {
