@@ -15,30 +15,73 @@ var SAT: any = (Matter as any).SAT
 class Mob {
     body: Matter.Body;
     isAlive: boolean;
-
+    constructor(body: Matter.Body) {
+        this.body = body;
+    }
     draw(s: p5) {
-        if (!this.isAlive) return;
+        //if (!this.isAlive) return;
 
-        // Draw
+        //mobs.forEach(m => drawBody(p, m, 'red'));
     }
 }
+
+class Ground {
+    body: Matter.Body;
+    constructor(body: Matter.Body) {
+        this.body = body;
+    }
+    draw(s: p5) {
+
+    }
+}
+class Wall {
+    body: Matter.Body;
+    constructor(body: Matter.Body) {
+        this.body = body;
+    }
+    draw(s: p5) {
+
+    }
+}
+class Platform {
+    body: Matter.Body;
+    constructor(body: Matter.Body) {
+        this.body = body;
+    }
+
+    draw(s: p5) {
+
+    }
+}
+ class Checkpoint {
+     body: Matter.Body;
+     constructor(body: Matter.Body) {
+        this.body = body;
+    }
+     draw(s: p5){}
+ }
+ class Bounds {
+    body: Matter.Body;
+    constructor(body: Matter.Body) {
+       this.body = body;
+   }
+    draw(s: p5){}
+}
+
 
 let sketch = function (p: p5) {
     // create an engine
     let engine: Matter.Engine;
     //create bodies
     let player: Player;
-    let mobs: Matter.Body[] = [];
-    let groundA: Matter.Body;
-    let groundB: Matter.Body;
-    let groundC: Matter.Body;
-    let groundD: Matter.Body;
-    let groundE: Matter.Body;
-    let groundF: Matter.Body;
-    let groundG: Matter.Body;
-    let groundH: Matter.Body;
-    let top: Matter.Body;
-    let bottom: Matter.Body;
+    let mobs: Mob[] = [];
+    let ground: Ground[] = [];
+    let checkpoint: Checkpoint[] = [];
+    let wall: Wall[] = [];
+    let platform: Platform[] = [];
+    let bounds: Bounds[] = [];
+    let deathCount = 0;
+    //let bottom: Matter.Body;
     let gravPower: Matter.Body;
     let sjumpPower: Matter.Body;
     let checkpointA: Matter.Body;
@@ -58,7 +101,6 @@ let sketch = function (p: p5) {
     let death = false;
     let mobADeath = false;
     let mobBDeath = false;
-    let playerpng;
     let playerGrounded = false;
     let doubleJump = false;
     let livesLost = false;
@@ -74,24 +116,17 @@ let sketch = function (p: p5) {
         //render.options.wireframes = false;
         // create player
         player = new Player();
-        mobs.push(Bodies.rectangle(900, 630, 40, 40, { inertia: Infinity, friction: 0 }));
-        mobs.push(Bodies.rectangle(1100, 630, 40, 40, { inertia: Infinity, friction: 0 }));
-        groundA = Bodies.rectangle(400, 410, 810, 30, {
-            isStatic: true, render: {
-                fillStyle: 'red',
-                strokeStyle: 'blue',
-                lineWidth: 3
-            }
-        });
-        groundB = Bodies.rectangle(800, 670, 600, 30, { isStatic: true });
-        groundC = Bodies.rectangle(1600, 670, 810, 30, { isStatic: true });
-        groundD = Bodies.rectangle(1600, 480, 810, 30, { isStatic: true });
-        groundE = Bodies.rectangle(0, 400, 100, 1000, { isStatic: true });
-        groundF = Bodies.rectangle(480, 1000, 1000, 400, { isStatic: true });
-        groundG = Bodies.rectangle(1600, 480, 810, 30, { isStatic: true });
-        groundH = Bodies.rectangle(1600, 480, 810, 30, { isStatic: true });
-        bottom = Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true });
-        top = Bodies.rectangle(-500, -230, 10000, 500, { isStatic: true });
+        mobs.push(new Mob(Bodies.rectangle(900, 630, 40, 40, { inertia: Infinity, friction: 0 })));
+        mobs.push(new Mob(Bodies.rectangle(1100, 630, 40, 40, { inertia: Infinity, friction: 0 })));
+        ground.push(new Ground(Bodies.rectangle(400, 410, 810, 30, {isStatic: true})));
+        ground.push(new Ground(Bodies.rectangle(800, 670, 600, 30, { isStatic: true })));
+        ground.push(new Ground(Bodies.rectangle(1600, 670, 810, 30, { isStatic: true })));
+        ground.push(new Ground(Bodies.rectangle(1600, 480, 810, 30, { isStatic: true })));
+        wall.push(new Wall(Bodies.rectangle(0, 400, 100, 1000, { isStatic: true })));
+        ground.push(new Ground(Bodies.rectangle(480, 1000, 1000, 30, { isStatic: true })));
+        platform.push(new Platform(Bodies.rectangle(1600, 480, 810, 30, { isStatic: true })));
+        ground.push(new Ground(Bodies.rectangle(1600, 480, 810, 30, { isStatic: true })));
+        bounds.push (new Bounds (Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true })));
         gravPower = Bodies.circle(800, 630, 20, { isStatic: true });
         sjumpPower = Bodies.circle(900, 630, 20, { isStatic: true });
         checkpointA = Bodies.circle(1300, 630, 20, { isStatic: true });
@@ -100,9 +135,8 @@ let sketch = function (p: p5) {
         checkpointB.isSensor = true
         sjumpPower.isSensor = true
         gravPower.isSensor = true
-        World.add(engine.world, [player.body, groundA, groundB, groundC, groundD, groundE, groundF, groundG, groundH, gravPower, sjumpPower, top, bottom, checkpointA, checkpointB]);
-        World.add(engine.world, mobs);
-
+        World.add(engine.world, [player.body, gravPower, sjumpPower, checkpointA, checkpointB]);
+        World.add(engine.world, [ground, wall, mobs, bounds]);
         //collisions for checkpoint saving
         Matter.Events.on(engine, "collisionEnd", function (event) {
             event.pairs
@@ -115,61 +149,18 @@ let sketch = function (p: p5) {
                 });
         });
 
-        //collisions for the player being grounded
-        Matter.Events.on(engine, "collisionStart", function (event) {
-            event.pairs
-                .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
-                .forEach(pair => {
-                    let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                    if (possibleGrounding.id == groundA.id || possibleGrounding.id == groundB.id) {
-                        playerGrounded = true;
-                        //doubleJump = true;
-                    }
-                });
-        });
-        Matter.Events.on(engine, "collisionStart", function (event) {
-            event.pairs
-                .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
-                .forEach(pair => {
-                    let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                    if (possibleGrounding.id == groundC.id || possibleGrounding.id == groundD.id) {
-                        playerGrounded = true;
-                        //doubleJump = true;
-                    }
-                });
-        });
-        Matter.Events.on(engine, "collisionEnd", function (event) {
-            event.pairs
-                .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
-                .forEach(pair => {
-                    let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                    if (possibleGrounding.id == groundA.id || possibleGrounding.id == groundB.id) {
-                        playerGrounded = false;
-                    }
-                });
-        });
-        Matter.Events.on(engine, "collisionEnd", function (event) {
-            event.pairs
-                .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
-                .forEach(pair => {
-                    let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                    if (possibleGrounding.id == groundC.id || possibleGrounding.id == groundD.id) {
-                        playerGrounded = false;
-                    }
-                });
-        });
-
         //collisions for playing hit ceiling/floor
-        Matter.Events.on(engine, "collisionStart", function (event) {
+        //bounds.forEach(b => {}
+        /*Matter.Events.on(engine, "collisionStart", function (event) {
             event.pairs
                 .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
                 .forEach(pair => {
                     let edgeOfVerticalMap = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                    if (edgeOfVerticalMap.id == top.id || edgeOfVerticalMap.id == bottom.id) {
+                    if (edgeOfVerticalMap.id == b.body.id) {
                         death = true;
                     }
                 });
-        });
+        });*/
         // Matter.Events.on(engine, "collisionStart", function (event) {
         //     event.pairs
         //         .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
@@ -205,24 +196,6 @@ let sketch = function (p: p5) {
         p.frameRate(60);
         p.translate(-player.body.position.x + innerWidth / 2, 0/*-player.position.y + innerHeight/2*/)
 
-
-
-        // let player: Matter.Body;
-        // let mobA: Matter.Body;
-        // let mobB: Matter.Body;
-        // let groundA: Matter.Body;
-        // let groundB: Matter.Body;
-        // let groundC: Matter.Body;
-        // let groundD: Matter.Body;
-        // let groundE: Matter.Body;
-        // let groundF: Matter.Body;
-        // let top: Matter.Body;
-        // let bottom: Matter.Body;
-        // let gravPower: Matter.Body;
-        // let sjumpPower: Matter.Body;
-        // let checkpointA: Matter.Body;
-        // let checkpointB: Matter.Body;
-
         // Draw all bodies
         // p5 and matter js meeting
         engine.world.bodies.forEach(body => {
@@ -230,11 +203,8 @@ let sketch = function (p: p5) {
         });
 
         player.draw(p);
-
-        for (let i = 0; i < mobs.length; i++) {
-            drawBody(p, mobs[i], 'red');
-        }
-        mobs.forEach(m => drawBody(p, m, 'red'));
+        
+        mobs.forEach(m => drawBody(p, m.body, 'purple'));
 
         drawBody(p, checkpointA, 'yellow');
         drawBody(p, checkpointB, 'yellow');
@@ -257,11 +227,11 @@ let sketch = function (p: p5) {
             if (collisionMob.collided && mobADeath == false) {
                 let now = Date.now();
                 if ((now - collisionFix) > collisionFixer) {
-                    if (Math.round(player.body.position.y) >= Math.round(m.position.y) - 30) {
+                    if (Math.round(player.body.position.y) >= Math.round(m.body.position.y) - 30) {
                         livesLost = true
                     }
-                    else if (death == false && Math.round(player.body.position.y) <= Math.round(m.position.y) - 30) {
-                        Matter.Composite.remove(engine.world, m);
+                    else if (death == false && Math.round(player.body.position.y) <= Math.round(m.body.position.y) - 30) {
+                        Matter.Composite.remove(engine.world, m.body);
                         mobADeath = true;
                     }
                     collisionFix = now;
@@ -269,6 +239,34 @@ let sketch = function (p: p5) {
 
             }
 
+        })
+        // platform.forEach(plat => {
+        //     if(Math.round(plat.body.position.x) == 400 && Math.round(plat.body.position.y) == 1600) {
+                
+        //     }
+        // });
+        //grounding the player
+        ground.forEach(g => {
+            Matter.Events.on(engine, "collisionStart", function (event) {
+                event.pairs
+                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
+                    .forEach(pair => {
+                        let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
+                        if (possibleGrounding.id == g.body.id) {
+                            playerGrounded = true;
+                        }
+                    });
+            });
+            Matter.Events.on(engine, "collisionEnd", function (event) {
+                event.pairs
+                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
+                    .forEach(pair => {
+                        let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
+                        if (possibleGrounding.id == g.body.id) {
+                            playerGrounded = false;
+                        }
+                    });
+            });
         })
 
         //Player Health system
@@ -286,18 +284,36 @@ let sketch = function (p: p5) {
             livesLost = false
         }
         //Player death
-        if (death == true) {
+        if (death == true && deathCount == 0) {
+            player.respawn();
+            player.lives = 2
+            deathCount = 1
+            death = false
+        }
+        if (death == true && deathCount == 1) {
+            player.respawn();
+            player.lives = 1
+            deathCount = 2
+            death = false
+        }
+        if (death == true && deathCount == 2) {
+            //refresh page
+            
+            player.spawnx = 400
+            player.spawny = 370
             player.respawn();
             death = false
+            deathCount = 0
+            player.lives = 3
         }
 
         //mob targetting
         mobs.forEach(m => {
-            if (m.position.x > player.body.position.x) {
-                Matter.Body.applyForce(m, m.position, { x: -0.0001, y: 0 });
+            if (m.body.position.x > player.body.position.x) {
+                Matter.Body.applyForce(m.body, m.body.position, { x: -0.0001, y: 0 });
             }
             else {
-                Matter.Body.applyForce(m, m.position, { x: 0.0001, y: 0 });
+                Matter.Body.applyForce(m.body, m.body.position, { x: 0.0001, y: 0 });
             }
         })
 
@@ -404,7 +420,7 @@ let sketch = function (p: p5) {
             p.fullscreen(!fs);
         }
     }
-};
+}};
 
 
 let myp5 = new p5(sketch);

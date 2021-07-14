@@ -8,21 +8,17 @@ class Player {
     lives: number;
     spawnx: number;
     spawny: number;
+    //colour: string;
 
     constructor() {
         // Do some stuff
         this.lives = 3;
         this.spawnx = 400;
         this.spawny = 370;
-
         this.body = Bodies.rectangle(this.spawnx, this.spawny, 40, 40, {
             inertia: Infinity, friction: 0.002,
-            /*sprite: {
-                texture: 'Player.png',
-                xScale: 1,
-                yScale: 1
-            }*/
         });
+        // this.colour = 'red'
         Body.setMass(this.body, 4)
     }
 
@@ -36,6 +32,28 @@ class Player {
     }
 
     draw(p: p5) {
+        //Movement
+        //W
+        // if (p.keyIsDown(87) && playerGrounded == true && hasSJump == false && engine.world.gravity.y == 1 && doubleJump == true) {
+        //     let now = Date.now();
+        //     if ((now - jumpTime) > jumpTimer) {
+        //         Matter.Body.applyForce(this.body, this.body.position, { x: 0, y: -0.06 });
+        //         jumpTime = now;
+        //     }
+        // }
+        // if (p.keyIsDown(87) && playerGrounded == false && hasSJump == false && engine.world.gravity.y == 1 && doubleJump == true) {
+        //     let now = Date.now();
+        //     if ((now - jumpTime) > jumpTimer) {
+        //         Matter.Body.applyForce(this.body, this.body.position, { x: 0, y: -0.06 });
+        //         doubleJump = false;
+        //         jumpTime = now;
+        //     }
+
+        // }
+        // if (playerGrounded == true) {
+        //     doubleJump = true;
+        //     console.log(this.body.position.x, this.body.position.y)
+        // }
         //A
         if (p.keyIsDown(65)) {
             Body.applyForce(this.body, this.body.position, { x: -0.002, y: 0 });
@@ -44,10 +62,9 @@ class Player {
         if (p.keyIsDown(68)) {
             Body.applyForce(this.body, this.body.position, { x: +0.002, y: 0 });
         }
-
-        drawBody(p, this.body, 'green');
-
     }
+    //update() {
+    //    this.colour = this.death ? 'lime' : 'green';}
 }
 
 export default Player;
