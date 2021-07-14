@@ -11,63 +11,49 @@ var Engine = Matter.Engine,
     Bodies = Matter.Bodies;
 var SAT: any = (Matter as any).SAT
 
-
-class Mob {
+abstract class GameObject {
     body: Matter.Body;
+    constructor(body: Matter.Body) {
+        this.body = body;
+    }
+    draw(s: p5) {
+
+    }
+}
+
+class Mob extends GameObject {
     isAlive: boolean;
     constructor(body: Matter.Body) {
-        this.body = body;
-    }
-    draw(s: p5) {
-        //if (!this.isAlive) return;
-
-        //mobs.forEach(m => drawBody(p, m, 'red'));
+        super(body)
     }
 }
 
-class Ground {
+class Ground extends GameObject {
     body: Matter.Body;
     constructor(body: Matter.Body) {
-        this.body = body;
-    }
-    draw(s: p5) {
-
+        super(body)
     }
 }
-class Wall {
-    body: Matter.Body;
+class Wall extends GameObject {
     constructor(body: Matter.Body) {
-        this.body = body;
-    }
-    draw(s: p5) {
-
+        super(body)
     }
 }
-class Platform {
-    body: Matter.Body;
+class Platform extends GameObject{
     constructor(body: Matter.Body) {
-        this.body = body;
-    }
-
-    draw(s: p5) {
-
+        super(body)
     }
 }
- class Checkpoint {
-     body: Matter.Body;
-     constructor(body: Matter.Body) {
-        this.body = body;
+class Checkpoint extends GameObject{
+    constructor(body: Matter.Body){
+        super(body)
     }
-     draw(s: p5){}
- }
- class Bounds {
-    body: Matter.Body;
-    constructor(body: Matter.Body) {
-       this.body = body;
-   }
-    draw(s: p5){}
 }
-
+class Bounds extends GameObject{
+    constructor(body: Matter.Body){
+        super(body)
+    }
+}
 
 let sketch = function (p: p5) {
     // create an engine
@@ -118,7 +104,7 @@ let sketch = function (p: p5) {
         player = new Player();
         mobs.push(new Mob(Bodies.rectangle(900, 630, 40, 40, { inertia: Infinity, friction: 0 })));
         mobs.push(new Mob(Bodies.rectangle(1100, 630, 40, 40, { inertia: Infinity, friction: 0 })));
-        ground.push(new Ground(Bodies.rectangle(400, 410, 810, 30, {isStatic: true})));
+        ground.push(new Ground(Bodies.rectangle(400, 410, 810, 30, { isStatic: true })));
         ground.push(new Ground(Bodies.rectangle(800, 670, 600, 30, { isStatic: true })));
         ground.push(new Ground(Bodies.rectangle(1600, 670, 810, 30, { isStatic: true })));
         ground.push(new Ground(Bodies.rectangle(1600, 480, 810, 30, { isStatic: true })));
@@ -126,7 +112,7 @@ let sketch = function (p: p5) {
         ground.push(new Ground(Bodies.rectangle(480, 1000, 1000, 30, { isStatic: true })));
         platform.push(new Platform(Bodies.rectangle(1600, 480, 810, 30, { isStatic: true })));
         ground.push(new Ground(Bodies.rectangle(1600, 480, 810, 30, { isStatic: true })));
-        bounds.push (new Bounds (Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true })));
+        bounds.push(new Bounds(Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true })));
         gravPower = Bodies.circle(800, 630, 20, { isStatic: true });
         sjumpPower = Bodies.circle(900, 630, 20, { isStatic: true });
         checkpointA = Bodies.circle(1300, 630, 20, { isStatic: true });
@@ -136,7 +122,10 @@ let sketch = function (p: p5) {
         sjumpPower.isSensor = true
         gravPower.isSensor = true
         World.add(engine.world, [player.body, gravPower, sjumpPower, checkpointA, checkpointB]);
-        World.add(engine.world, [ground, wall, mobs, bounds]);
+        ground.forEach(g => World.add(engine.world, g.body));
+        wall.forEach(w => World.add(engine.world, w.body));
+        mobs.forEach(m => World.add(engine.world, m.body));
+        bounds.forEach(b => World.add(engine.world, b.body));
         //collisions for checkpoint saving
         Matter.Events.on(engine, "collisionEnd", function (event) {
             event.pairs
@@ -203,7 +192,7 @@ let sketch = function (p: p5) {
         });
 
         player.draw(p);
-        
+
         mobs.forEach(m => drawBody(p, m.body, 'purple'));
 
         drawBody(p, checkpointA, 'yellow');
@@ -242,7 +231,7 @@ let sketch = function (p: p5) {
         })
         // platform.forEach(plat => {
         //     if(Math.round(plat.body.position.x) == 400 && Math.round(plat.body.position.y) == 1600) {
-                
+
         //     }
         // });
         //grounding the player
@@ -298,7 +287,7 @@ let sketch = function (p: p5) {
         }
         if (death == true && deathCount == 2) {
             //refresh page
-            
+
             player.spawnx = 400
             player.spawny = 370
             player.respawn();
@@ -420,7 +409,7 @@ let sketch = function (p: p5) {
             p.fullscreen(!fs);
         }
     }
-}};
+};
 
 
 let myp5 = new p5(sketch);
