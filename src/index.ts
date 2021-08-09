@@ -3,7 +3,9 @@ import * as p5 from 'p5';
 import * as Matter from 'matter-js';
 
 import drawBody from './drawBody';
-import Player from './Player'
+import Player from './Player';
+import GameObject from './GameObject';
+import Object from './Objects';
 
 // module aliases
 var Engine = Matter.Engine,
@@ -11,47 +13,62 @@ var Engine = Matter.Engine,
     Bodies = Matter.Bodies;
 var SAT: any = (Matter as any).SAT
 
-abstract class GameObject {
-    body: Matter.Body;
-    constructor(body: Matter.Body) {
-        this.body = body;
-    }
-    draw(s: p5) {
+// abstract class GameObject {
+//     body: Matter.Body;
+//     constructor(body: Matter.Body) {
+//         this.body = body;
+//     }
+//     draw(s: p5) {
 
-    }
-}
+//     }
+// }
 
 class Mob extends GameObject {
+    update(): void {}
     isAlive: boolean;
-    constructor(body: Matter.Body) {
-        super(body)
+    constructor(s: p5, engine: Engine) {
+        // Do some stuff
+        super(s, engine, Bodies.rectangle(900, 630, 40, 40, { inertia: Infinity, friction: 0 }), 'purple');
+        super(s, engine, Bodies.rectangle(1100, 630, 40, 40, { inertia: Infinity, friction: 0 }), 'purple');
     }
 }
-
 class Ground extends GameObject {
-    body: Matter.Body;
-    constructor(body: Matter.Body) {
-        super(body)
+    update(): void {}
+    constructor(s: p5, engine: Engine) {
+        // Do some stuff
+        super(s, engine, Bodies.rectangle(1600, 480, 810, 30, { isStatic: true }), 'green');
+        super(s, engine, Bodies.rectangle(800, 670, 600, 30, { isStatic: true }), 'green');
+        super(s, engine, Bodies.rectangle(400, 410, 810, 30, { isStatic: true }), 'green');
+        super(s, engine, Bodies.rectangle(1600, 670, 810, 30, { isStatic: true }), 'green');
+        super(s, engine, Bodies.rectangle(480, 1000, 1000, 30, { isStatic: true }), 'green');
     }
 }
 class Wall extends GameObject {
-    constructor(body: Matter.Body) {
-        super(body)
+    update(): void {}
+    constructor(s: p5, engine: Engine) {
+        // Do some stuff
+        super(s, engine, Bodies.rectangle(0, 400, 100, 1000, { isStatic: true }), 'green');
     }
 }
-class Platform extends GameObject{
-    constructor(body: Matter.Body) {
-        super(body)
+class Platform extends GameObject {
+    update(): void {}
+    constructor(s: p5, engine: Engine) {
+        // Do some stuff
+        super(s, engine, Bodies.rectangle(300, 400, 10, 10, { isStatic: true }), 'green');
     }
 }
-class Checkpoint extends GameObject{
-    constructor(body: Matter.Body){
-        super(body)
+class Checkpoint extends GameObject {
+    update(): void {}
+    constructor(s: p5, engine: Engine) {
+        // Do some stuff
+        super(s, engine, Bodies.circle(1400, 440, 20, { isStatic: true }), 'green');
     }
 }
-class Bounds extends GameObject{
-    constructor(body: Matter.Body){
-        super(body)
+class Bounds extends GameObject {
+    update(): void {}
+    constructor(s: p5, engine: Engine) {
+        // Do some stuff
+        super(s, engine, Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true }),'green');
     }
 }
 
@@ -67,7 +84,6 @@ let sketch = function (p: p5) {
     let platform: Platform[] = [];
     let bounds: Bounds[] = [];
     let deathCount = 0;
-    //let bottom: Matter.Body;
     let gravPower: Matter.Body;
     let sjumpPower: Matter.Body;
     let checkpointA: Matter.Body;
@@ -94,6 +110,7 @@ let sketch = function (p: p5) {
     let invulnerablilityTimer = 500;
 
     p.setup = function () {
+        
         p.frameRate(60);
         //moves canvas to fit the webpage
         let cnv = p.createCanvas(window.innerWidth + 10, window.innerHeight + 99);
@@ -101,18 +118,6 @@ let sketch = function (p: p5) {
         engine = Engine.create();
         //render.options.wireframes = false;
         // create player
-        player = new Player();
-        mobs.push(new Mob(Bodies.rectangle(900, 630, 40, 40, { inertia: Infinity, friction: 0 })));
-        mobs.push(new Mob(Bodies.rectangle(1100, 630, 40, 40, { inertia: Infinity, friction: 0 })));
-        ground.push(new Ground(Bodies.rectangle(400, 410, 810, 30, { isStatic: true })));
-        ground.push(new Ground(Bodies.rectangle(800, 670, 600, 30, { isStatic: true })));
-        ground.push(new Ground(Bodies.rectangle(1600, 670, 810, 30, { isStatic: true })));
-        ground.push(new Ground(Bodies.rectangle(1600, 480, 810, 30, { isStatic: true })));
-        wall.push(new Wall(Bodies.rectangle(0, 400, 100, 1000, { isStatic: true })));
-        ground.push(new Ground(Bodies.rectangle(480, 1000, 1000, 30, { isStatic: true })));
-        platform.push(new Platform(Bodies.rectangle(1600, 480, 810, 30, { isStatic: true })));
-        ground.push(new Ground(Bodies.rectangle(1600, 480, 810, 30, { isStatic: true })));
-        bounds.push(new Bounds(Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true })));
         gravPower = Bodies.circle(800, 630, 20, { isStatic: true });
         sjumpPower = Bodies.circle(900, 630, 20, { isStatic: true });
         checkpointA = Bodies.circle(1300, 630, 20, { isStatic: true });
@@ -184,14 +189,14 @@ let sketch = function (p: p5) {
         p.background(20);
         p.frameRate(60);
         p.translate(-player.body.position.x + innerWidth / 2, 0/*-player.position.y + innerHeight/2*/)
-
+        player.update()
         // Draw all bodies
         // p5 and matter js meeting
         engine.world.bodies.forEach(body => {
             drawBody(p, body, 'green');
         });
 
-        player.draw(p);
+        // player.draw(p);
 
         mobs.forEach(m => drawBody(p, m.body, 'purple'));
 
