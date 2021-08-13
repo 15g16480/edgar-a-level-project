@@ -26,7 +26,7 @@ var SAT: any = (Matter as any).SAT
 class Mob extends GameObject {
     update(): void {}
     isAlive: boolean;
-    constructor(s: p5, engine: Engine) {
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
         super(s, engine, Bodies.rectangle(900, 630, 40, 40, { inertia: Infinity, friction: 0 }), 'purple');
         super(s, engine, Bodies.rectangle(1100, 630, 40, 40, { inertia: Infinity, friction: 0 }), 'purple');
@@ -34,7 +34,7 @@ class Mob extends GameObject {
 }
 class Ground extends GameObject {
     update(): void {}
-    constructor(s: p5, engine: Engine) {
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
         super(s, engine, Bodies.rectangle(1600, 480, 810, 30, { isStatic: true }), 'green');
         super(s, engine, Bodies.rectangle(800, 670, 600, 30, { isStatic: true }), 'green');
@@ -45,28 +45,28 @@ class Ground extends GameObject {
 }
 class Wall extends GameObject {
     update(): void {}
-    constructor(s: p5, engine: Engine) {
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
         super(s, engine, Bodies.rectangle(0, 400, 100, 1000, { isStatic: true }), 'green');
     }
 }
 class Platform extends GameObject {
     update(): void {}
-    constructor(s: p5, engine: Engine) {
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
         super(s, engine, Bodies.rectangle(300, 400, 10, 10, { isStatic: true }), 'green');
     }
 }
 class Checkpoint extends GameObject {
     update(): void {}
-    constructor(s: p5, engine: Engine) {
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
         super(s, engine, Bodies.circle(1400, 440, 20, { isStatic: true }), 'green');
     }
 }
 class Bounds extends GameObject {
     update(): void {}
-    constructor(s: p5, engine: Engine) {
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
         super(s, engine, Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true }),'green');
     }
@@ -110,7 +110,6 @@ let sketch = function (p: p5) {
     let invulnerablilityTimer = 500;
 
     p.setup = function () {
-        
         p.frameRate(60);
         //moves canvas to fit the webpage
         let cnv = p.createCanvas(window.innerWidth + 10, window.innerHeight + 99);
@@ -118,19 +117,20 @@ let sketch = function (p: p5) {
         engine = Engine.create();
         //render.options.wireframes = false;
         // create player
-        gravPower = Bodies.circle(800, 630, 20, { isStatic: true });
-        sjumpPower = Bodies.circle(900, 630, 20, { isStatic: true });
-        checkpointA = Bodies.circle(1300, 630, 20, { isStatic: true });
-        checkpointB = Bodies.circle(1400, 440, 20, { isStatic: true });
+        gravPower = Matter.Bodies.circle(800, 630, 20, { isStatic: true });
+        sjumpPower = Matter.Bodies.circle(900, 630, 20, { isStatic: true });
+        checkpointA = Matter.Bodies.circle(1300, 630, 20, { isStatic: true });
+        checkpointB = Matter.Bodies.circle(1400, 440, 20, { isStatic: true });
         checkpointA.isSensor = true
         checkpointB.isSensor = true
         sjumpPower.isSensor = true
         gravPower.isSensor = true
-        World.add(engine.world, [player.body, gravPower, sjumpPower, checkpointA, checkpointB]);
+        World.add(engine.world, [gravPower, sjumpPower, checkpointA, checkpointB]);
         ground.forEach(g => World.add(engine.world, g.body));
         wall.forEach(w => World.add(engine.world, w.body));
         mobs.forEach(m => World.add(engine.world, m.body));
         bounds.forEach(b => World.add(engine.world, b.body));
+        player = new Player(p, engine);
         //collisions for checkpoint saving
         Matter.Events.on(engine, "collisionEnd", function (event) {
             event.pairs
@@ -185,7 +185,7 @@ let sketch = function (p: p5) {
         p.text('whagwan', 10, 10, 70, 80)
     };
     p.draw = function () {
-        Engine.update(engine, 30);
+        Matter.Engine.update(engine, 30);
         p.background(20);
         p.frameRate(60);
         p.translate(-player.body.position.x + innerWidth / 2, 0/*-player.position.y + innerHeight/2*/)

@@ -4,6 +4,7 @@ import GameObject from './GameObject'
 
 class Player extends GameObject {
     update() {
+
         //A
         if (this.s.keyIsDown(65)) {
             Body.applyForce(this.body, this.body.position, { x: -0.002, y: 0 });
@@ -13,7 +14,7 @@ class Player extends GameObject {
             Body.applyForce(this.body, this.body.position, { x: +0.002, y: 0 });
         }
     }
-    body: Matter.Body;
+    body: Body;
     lives: number;
     spawnx: number;
     spawny: number;
@@ -38,6 +39,7 @@ class Player extends GameObject {
     respawn() {
         Body.translate(this.body, { x: this.spawnx - this.body.position.x, y: this.spawny - this.body.position.y });
     }
+    
     //Movement
     //W
     // if (p.keyIsDown(87) && playerGrounded == true && hasSJump == false && engine.world.gravity.y == 1 && doubleJump == true) {
