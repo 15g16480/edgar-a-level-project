@@ -24,51 +24,56 @@ var SAT: any = (Matter as any).SAT
 // }
 
 class Mob extends GameObject {
-    update(): void {}
+    update(): void { }
     isAlive: boolean;
-    constructor(s: p5, engine: Engine) {
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
         super(s, engine, Bodies.rectangle(900, 630, 40, 40, { inertia: Infinity, friction: 0 }), 'purple');
         super(s, engine, Bodies.rectangle(1100, 630, 40, 40, { inertia: Infinity, friction: 0 }), 'purple');
     }
 }
 class Ground extends GameObject {
-    update(): void {}
-    constructor(s: p5, engine: Engine) {
+    update(): void { }
+
+    /**
+     * SHARP: This constructor has same prototype as GameObject, so you could technically omit it.
+     * But in case you want to add any 'ground specific' stuff later, I will leave it here.
+     */
+    constructor(s: p5, engine: Matter.Engine, body: Matter.Body, colour: string) {
+        /*
+        SHARP You generally only expect to call the super constructor once, I've never called it multiple times.
+        I'm surprised the language even allows it.
+        */
+        super(s, engine, body, colour);
         // Do some stuff
-        super(s, engine, Bodies.rectangle(1600, 480, 810, 30, { isStatic: true }), 'green');
-        super(s, engine, Bodies.rectangle(800, 670, 600, 30, { isStatic: true }), 'green');
-        super(s, engine, Bodies.rectangle(400, 410, 810, 30, { isStatic: true }), 'green');
-        super(s, engine, Bodies.rectangle(1600, 670, 810, 30, { isStatic: true }), 'green');
-        super(s, engine, Bodies.rectangle(480, 1000, 1000, 30, { isStatic: true }), 'green');
     }
 }
 class Wall extends GameObject {
-    update(): void {}
-    constructor(s: p5, engine: Engine) {
+    update(): void { }
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
         super(s, engine, Bodies.rectangle(0, 400, 100, 1000, { isStatic: true }), 'green');
     }
 }
 class Platform extends GameObject {
-    update(): void {}
-    constructor(s: p5, engine: Engine) {
+    update(): void { }
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
         super(s, engine, Bodies.rectangle(300, 400, 10, 10, { isStatic: true }), 'green');
     }
 }
 class Checkpoint extends GameObject {
-    update(): void {}
-    constructor(s: p5, engine: Engine) {
+    update(): void { }
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
         super(s, engine, Bodies.circle(1400, 440, 20, { isStatic: true }), 'green');
     }
 }
 class Bounds extends GameObject {
-    update(): void {}
-    constructor(s: p5, engine: Engine) {
+    update(): void { }
+    constructor(s: p5, engine: Matter.Engine) {
         // Do some stuff
-        super(s, engine, Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true }),'green');
+        super(s, engine, Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true }), 'green');
     }
 }
 
@@ -110,12 +115,13 @@ let sketch = function (p: p5) {
     let invulnerablilityTimer = 500;
 
     p.setup = function () {
-        
+
         p.frameRate(60);
         //moves canvas to fit the webpage
         let cnv = p.createCanvas(window.innerWidth + 10, window.innerHeight + 99);
         cnv.position(-10, -20)
         engine = Engine.create();
+        player = new Player(p, engine);
         //render.options.wireframes = false;
         // create player
         gravPower = Bodies.circle(800, 630, 20, { isStatic: true });
@@ -127,6 +133,17 @@ let sketch = function (p: p5) {
         sjumpPower.isSensor = true
         gravPower.isSensor = true
         World.add(engine.world, [player.body, gravPower, sjumpPower, checkpointA, checkpointB]);
+
+        /**
+         * SHARP: Before we can start using the ground array, we must populate it with some objects.
+         * Take note of how I have translated the calls you were making to super, into instantiation calls of Ground objects.
+         */
+        ground.push(new Ground(p, engine, Bodies.rectangle(1600, 480, 810, 30, { isStatic: true }), 'green'));
+        ground.push(new Ground(p, engine, Bodies.rectangle(800, 670, 600, 30, { isStatic: true }), 'green'));
+        ground.push(new Ground(p, engine, Bodies.rectangle(400, 410, 810, 30, { isStatic: true }), 'green'));
+        ground.push(new Ground(p, engine, Bodies.rectangle(1600, 670, 810, 30, { isStatic: true }), 'green'));
+        ground.push(new Ground(p, engine, Bodies.rectangle(480, 1000, 1000, 30, { isStatic: true }), 'green'));
+
         ground.forEach(g => World.add(engine.world, g.body));
         wall.forEach(w => World.add(engine.world, w.body));
         mobs.forEach(m => World.add(engine.world, m.body));
@@ -183,6 +200,30 @@ let sketch = function (p: p5) {
         // });
         p.fill(400);
         p.text('whagwan', 10, 10, 70, 80)
+
+        //grounding the player
+        ground.forEach(g => {
+            Matter.Events.on(engine, "collisionStart", function (event) {
+                event.pairs
+                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
+                    .forEach(pair => {
+                        let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
+                        if (possibleGrounding.id == g.body.id) {
+                            playerGrounded = true;
+                        }
+                    });
+            });
+            Matter.Events.on(engine, "collisionEnd", function (event) {
+                event.pairs
+                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
+                    .forEach(pair => {
+                        let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
+                        if (possibleGrounding.id == g.body.id) {
+                            playerGrounded = false;
+                        }
+                    });
+            });
+        })
     };
     p.draw = function () {
         Engine.update(engine, 30);
@@ -239,29 +280,7 @@ let sketch = function (p: p5) {
 
         //     }
         // });
-        //grounding the player
-        ground.forEach(g => {
-            Matter.Events.on(engine, "collisionStart", function (event) {
-                event.pairs
-                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
-                    .forEach(pair => {
-                        let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                        if (possibleGrounding.id == g.body.id) {
-                            playerGrounded = true;
-                        }
-                    });
-            });
-            Matter.Events.on(engine, "collisionEnd", function (event) {
-                event.pairs
-                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
-                    .forEach(pair => {
-                        let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                        if (possibleGrounding.id == g.body.id) {
-                            playerGrounded = false;
-                        }
-                    });
-            });
-        })
+
 
         //Player Health system
         if (player.lives == 0) {
