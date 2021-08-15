@@ -3,6 +3,7 @@ import * as p5 from 'p5'
 import GameObject from './GameObject'
 
 class Player extends GameObject {
+    draw(){};
     update() {
 
         //A

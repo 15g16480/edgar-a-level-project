@@ -6,6 +6,12 @@ import drawBody from './drawBody';
 import Player from './Player';
 import GameObject from './GameObject';
 import Object from './Objects';
+import Mob from './Mob';
+import Bounds from './Bounds';
+import Checkpoint from './Bounds';
+import Platform from './PLatform';
+import Wall from './Wall';
+import Ground from './Ground';
 
 // module aliases
 var Engine = Matter.Engine,
@@ -22,61 +28,6 @@ var SAT: any = (Matter as any).SAT
 
 //     }
 // }
-
-class Mob extends GameObject {
-    update(): void {}
-    draw(): void { /* draw the wall here */ }
-    isAlive: boolean;
-    constructor(s: p5, engine: Matter.Engine) {
-        // Do some stuff
-        super(s, engine, Bodies.rectangle(900, 630, 40, 40, { inertia: Infinity, friction: 0 }), 'purple');
-        super(s, engine, Bodies.rectangle(1100, 630, 40, 40, { inertia: Infinity, friction: 0 }), 'purple');
-    }
-}
-class Ground extends GameObject {
-    update(): void {}
-    draw(): void { /* draw the wall here */ }
-    constructor(s: p5, engine: Matter.Engine) {
-        // Do some stuff
-        super(s, engine, Bodies.rectangle(1600, 480, 810, 30, { isStatic: true }), 'green');
-        super(s, engine, Bodies.rectangle(800, 670, 600, 30, { isStatic: true }), 'green');
-        super(s, engine, Bodies.rectangle(400, 410, 810, 30, { isStatic: true }), 'green');
-        super(s, engine, Bodies.rectangle(1600, 670, 810, 30, { isStatic: true }), 'green');
-        super(s, engine, Bodies.rectangle(480, 1000, 1000, 30, { isStatic: true }), 'green');
-    }
-}
-class Wall extends GameObject {
-    update(): void {}
-    draw(): void { /* draw the wall here */ }
-    constructor(s: p5, engine: Matter.Engine) {
-        // Do some stuff
-        super(s, engine, Bodies.rectangle(0, 400, 100, 1000, { isStatic: true }), 'green');
-    }
-}
-class Platform extends GameObject {
-    update(): void {}
-    draw(): void { /* draw the wall here */ }
-    constructor(s: p5, engine: Matter.Engine) {
-        // Do some stuff
-        super(s, engine, Bodies.rectangle(300, 400, 10, 10, { isStatic: true }), 'green');
-    }
-}
-class Checkpoint extends GameObject {
-    update(): void {}
-    draw(): void { /* draw the wall here */ }
-    constructor(s: p5, engine: Matter.Engine) {
-        // Do some stuff
-        super(s, engine, Bodies.circle(1400, 440, 20, { isStatic: true }), 'green');
-    }
-}
-class Bounds extends GameObject {
-    update(): void {}
-    draw(): void { /* draw the wall here */ }
-    constructor(s: p5, engine: Matter.Engine) {
-        // Do some stuff
-        super(s, engine, Bodies.rectangle(-500, 1170, 10000, 500, { isStatic: true }),'green');
-    }
-}
 
 let sketch = function (p: p5) {
     // create an engine
