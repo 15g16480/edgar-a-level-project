@@ -16,14 +16,7 @@ abstract class GameObject extends Object {
         this.colour = colour;
         World.add(engine.world, [this.body]);
     }
-    draw(): void {
-        this.s.fill(this.colour);
-
-        this.s.beginShape()
-        this.body.vertices.forEach(vertex => {
-            this.s.vertex(vertex.x, vertex.y);
-        })
-        this.s.endShape(this.s.CLOSE);
-    }
+    abstract draw(): void;
+    abstract update(): void;
 }
 export default GameObject
