@@ -1,6 +1,6 @@
 import * as p5 from "p5";
 import { World, Body, Engine } from 'matter-js'
-import Object from './Objects';
+import Object from './Object';
 
 abstract class GameObject extends Object {
 

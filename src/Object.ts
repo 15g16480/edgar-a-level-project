@@ -6,7 +6,7 @@ import * as p5 from "p5";
  * 
  * It defines a standard interface for all game objects.
  */
-abstract class GameObject {
+abstract class Object {
     s: p5;
 
     constructor(s: p5) {
@@ -24,4 +24,4 @@ abstract class GameObject {
     abstract draw(): void;
 }
 
-export default GameObject;
+export default Object;

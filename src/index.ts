@@ -5,7 +5,7 @@ import * as Matter from 'matter-js';
 import drawBody from './drawBody';
 import Player from './Player';
 import GameObject from './GameObject';
-import Object from './Objects';
+import Object from './Object';
 import Mob from './Mob';
 import Bounds from './Bounds';
 import Checkpoint from './Bounds';
@@ -32,20 +32,21 @@ var SAT: any = (Matter as any).SAT
 let sketch = function (p: p5) {
     // create an engine
     let engine: Matter.Engine;
-    engine = Engine.create();
     //create bodies
     let player: Player;
     let mobs: Mob[] = [];
     let ground: Ground[] = [];
-    let checkpoint: Checkpoint[] = [];
+    let checkpoints: Checkpoint[] = [];
     let walls: Wall[] = [];
-    let platform: Platform[] = [];
+    let platforms: Platform[] = [];
     let bounds: Bounds[] = [];
     let deathCount = 0;
+
     let gravPower: Matter.Body;
     let sjumpPower: Matter.Body;
     let checkpointA: Matter.Body;
     let checkpointB: Matter.Body;
+
     let buttonCD = 0;
     let hasGrav = false;
     let hasSJump = false;
@@ -72,9 +73,20 @@ let sketch = function (p: p5) {
         //moves canvas to fit the webpage
         let cnv = p.createCanvas(window.innerWidth + 10, window.innerHeight + 99);
         cnv.position(-10, -20)
-        //engine = Engine.create();
+        engine = Engine.create();
         //render.options.wireframes = false;
+
         // create player
+
+        player = new Player(p, engine);
+
+        ground.push(new Ground(p, engine));
+        mobs.push(new Mob(p, engine));
+        checkpoints.push(new Checkpoint(p, engine));
+        walls.push(new Wall(p, engine));
+        platforms.push(new Platform(p, engine));
+        bounds.push(new Bounds(p, engine));
+
         gravPower = Matter.Bodies.circle(800, 630, 20, { isStatic: true });
         sjumpPower = Matter.Bodies.circle(900, 630, 20, { isStatic: true });
         checkpointA = Matter.Bodies.circle(1300, 630, 20, { isStatic: true });
@@ -83,12 +95,15 @@ let sketch = function (p: p5) {
         checkpointB.isSensor = true
         sjumpPower.isSensor = true
         gravPower.isSensor = true
-        World.add(engine.world, [gravPower, sjumpPower, checkpointA, checkpointB]);
+
+        // World.add(engine.world, [gravPower, sjumpPower, checkpointA, checkpointB]);
+
         ground.forEach(g => World.add(engine.world, g.body));
         walls.forEach(w => World.add(engine.world, w.body));
         mobs.forEach(m => World.add(engine.world, m.body));
         bounds.forEach(b => World.add(engine.world, b.body));
-        player = new Player(p, engine);
+        platforms.forEach(p => World.add(engine.world, p.body));
+
         //collisions for checkpoint saving
         Matter.Events.on(engine, "collisionEnd", function (event) {
             event.pairs
@@ -101,26 +116,54 @@ let sketch = function (p: p5) {
                 });
         });
 
+        // ground collision
+        ground.forEach(g => {
+            Matter.Events.on(engine, "collisionStart", function (event) {
+                event.pairs
+                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
+                    .forEach(pair => {
+                        let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
+                        if (possibleGrounding.id == g.body.id) {
+                            playerGrounded = true;
+                        }
+                    });
+            });
+            Matter.Events.on(engine, "collisionEnd", function (event) {
+                event.pairs
+                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
+                    .forEach(pair => {
+                        let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
+                        if (possibleGrounding.id == g.body.id) {
+                            playerGrounded = false;
+                        }
+                    });
+            });
+        })
+
         //collisions for playing hit ceiling/floor
         //bounds.forEach(b => {}
-        /*Matter.Events.on(engine, "collisionStart", function (event) {
+
+        // player death
+        Matter.Events.on(engine, "collisionStart", function (event) {
             event.pairs
                 .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
                 .forEach(pair => {
                     let edgeOfVerticalMap = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                    if (edgeOfVerticalMap.id == b.body.id) {
+                    if (edgeOfVerticalMap.id == 99) {
                         death = true;
                     }
                 });
-        });*/
+        });
+
+        // mob behaviour
         // Matter.Events.on(engine, "collisionStart", function (event) {
         //     event.pairs
         //         .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
         //         .forEach(pair => {
-        //             let mobCollides = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-        //             if (mobCollides.id == mobA.id || mobCollides.id == mobB.id) {
+        //             let collidingMobId = pair.bodyA.id == player.body.id ? pair.bodyB.id : pair.bodyA.id;
+        //             let collidingMob = mobs.find(m => m.body.id == collidingMobId);
 
-        //                     if (Math.round(player.position.y) >= Math.round(mobA.position.y) - 30 && mobADeath == false) {
+        //                     if (Math.round(player.body.position.y) >= Math.round(collidingMob.body.position.y) - 30 && !collidingMob.isAlive() {
         //                         death = true
         //                     }
         //                     else if (death == false && Math.round(player.position.y) <= Math.round(mobA.position.y) - 30 && mobADeath == false) {
@@ -134,14 +177,14 @@ let sketch = function (p: p5) {
         //                         Matter.Composite.remove(engine.world, mobB);
         //                         mobBDeath = true;
         //                     }
+        //                 })
+        //             };
 
 
-        //             }
-        //         });
-        // });
         p.fill(400);
         p.text('whagwan', 10, 10, 70, 80);
     };
+
     p.draw = function () {
         Matter.Engine.update(engine, 30);
         p.background(20);
@@ -197,29 +240,6 @@ let sketch = function (p: p5) {
 
         //     }
         // });
-        //grounding the player
-        ground.forEach(g => {
-            Matter.Events.on(engine, "collisionStart", function (event) {
-                event.pairs
-                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
-                    .forEach(pair => {
-                        let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                        if (possibleGrounding.id == g.body.id) {
-                            playerGrounded = true;
-                        }
-                    });
-            });
-            Matter.Events.on(engine, "collisionEnd", function (event) {
-                event.pairs
-                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
-                    .forEach(pair => {
-                        let possibleGrounding = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                        if (possibleGrounding.id == g.body.id) {
-                            playerGrounded = false;
-                        }
-                    });
-            });
-        })
 
         //Player Health system
         if (player.lives == 0) {
