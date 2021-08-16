@@ -78,14 +78,21 @@ let sketch = function (p: p5) {
 
         // create player
 
-        player = new Player(p, engine);
+        player = new Player(p, engine, 400, 370, 40, 40, 'green');
 
-        ground.push(new Ground(p, engine));
-        mobs.push(new Mob(p, engine));
-        checkpoints.push(new Checkpoint(p, engine));
-        walls.push(new Wall(p, engine));
-        platforms.push(new Platform(p, engine));
-        bounds.push(new Bounds(p, engine));
+        ground.push(new Ground(p, engine, 1600, 480, 810, 30, 'blue'));
+        ground.push(new Ground(p, engine, 400, 410, 810, 30, 'blue'));
+        ground.push(new Ground (p, engine, 1600, 670, 810, 30, 'blue'));
+        ground.push(new Ground(p, engine, 480, 1000, 1000, 30, 'blue'));
+        //ground.push(new Ground(p, engine, 800, 670, 600, 30, 'green'));
+        //ground.push(new Ground(p, engine, 800, 670, 600, 30, 'green'));
+        mobs.push(new Mob(p, engine, 900, 630, 40, 40, 'orange'));
+        mobs.push(new Mob(p, engine, 700, 630, 40, 40, 'orange'));
+        checkpoints.push(new Checkpoint(p, engine, 1400, 440, 20, 20, 'yellow'));
+        checkpoints.push(new Checkpoint(p, engine, 800, 440, 20, 20, 'yellow'));
+        walls.push(new Wall(p, engine, 0, 400, 100, 1000, 'blue'));
+        //platforms.push(new Platform(p, engine, 300, 400, 10, 10, 'blue'));
+        bounds.push(new Bounds(p, engine,-500, 1170, 10000, 500, 'blue'));
 
         gravPower = Matter.Bodies.circle(800, 630, 20, { isStatic: true });
         sjumpPower = Matter.Bodies.circle(900, 630, 20, { isStatic: true });
@@ -191,18 +198,17 @@ let sketch = function (p: p5) {
         p.frameRate(60);
         p.translate(-player.body.position.x + innerWidth / 2, 0/*-player.position.y + innerHeight/2*/)
         player.update()
-        // Draw all bodies
-        // p5 and matter js meeting
-        engine.world.bodies.forEach(body => {
-            drawBody(p, body, 'green');
-        });
 
-        // player.draw(p);
+        player.draw();
+        mobs.forEach(m => m.draw());
+        bounds.forEach(b => b.draw());
+        checkpoints.forEach(c => c.draw());
+        ground.forEach(g => g.draw());
+        platforms.forEach(p => p.draw());
+        walls.forEach(w => w.draw());
 
-        mobs.forEach(m => drawBody(p, m.body, 'purple'));
-
-        drawBody(p, checkpointA, 'yellow');
-        drawBody(p, checkpointB, 'yellow');
+        // drawBody(p, checkpointA, 'yellow');
+        // drawBody(p, checkpointB, 'yellow');
         // Draw all bodies
         // p5 and matter js meeting
         // engine.world.bodies.forEach(body => {
@@ -214,27 +220,27 @@ let sketch = function (p: p5) {
         // });
 
         //mob collision
-        mobs.forEach(m => {
+        // mobs.forEach(m => {
 
-            let collisionMob = SAT.collides(player.body, m);
+        //     let collisionMob = SAT.collides(player.body, m);
 
-            //mob collision 
-            if (collisionMob.collided && mobADeath == false) {
-                let now = Date.now();
-                if ((now - collisionFix) > collisionFixer) {
-                    if (Math.round(player.body.position.y) >= Math.round(m.body.position.y) - 30) {
-                        livesLost = true
-                    }
-                    else if (death == false && Math.round(player.body.position.y) <= Math.round(m.body.position.y) - 30) {
-                        Matter.Composite.remove(engine.world, m.body);
-                        mobADeath = true;
-                    }
-                    collisionFix = now;
-                }
+        //     //mob collision 
+        //     if (collisionMob.collided && mobADeath == false) {
+        //         let now = Date.now();
+        //         if ((now - collisionFix) > collisionFixer) {
+        //             if (Math.round(player.body.position.y) >= Math.round(m.body.position.y) - 30) {
+        //                 livesLost = true
+        //             }
+        //             else if (death == false && Math.round(player.body.position.y) <= Math.round(m.body.position.y) - 30) {
+        //                 Matter.Composite.remove(engine.world, m.body);
+        //                 mobADeath = true;
+        //             }
+        //             collisionFix = now;
+        //         }
 
-            }
+        //     }
 
-        })
+        // })
         // platform.forEach(plat => {
         //     if(Math.round(plat.body.position.x) == 400 && Math.round(plat.body.position.y) == 1600) {
 

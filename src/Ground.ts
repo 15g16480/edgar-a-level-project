@@ -1,13 +1,13 @@
+import * as Matter from 'matter-js';
 import { Body, Bodies, Engine } from 'matter-js';
 import * as p5 from 'p5'
 import GameObject from './GameObject'
 
 class Ground extends GameObject {
     update(): void {}
-    draw(): void { /* draw the wall here */ }
-    constructor(s: p5, engine: Matter.Engine) {
-        // Do some stuff
-        super(s, engine, Bodies.rectangle(1600, 480, 810, 30, { isStatic: true }), 'green');
+
+    constructor(s: p5, engine: Matter.Engine, posX: number, posY: number, height: number, width: number, colour: string) {
+        super(s, engine, Bodies.rectangle(posX, posY, height, width, { isStatic: true }), colour);
         // super(s, engine, Bodies.rectangle(800, 670, 600, 30, { isStatic: true }), 'green');
         // super(s, engine, Bodies.rectangle(400, 410, 810, 30, { isStatic: true }), 'green');
         // super(s, engine, Bodies.rectangle(1600, 670, 810, 30, { isStatic: true }), 'green');

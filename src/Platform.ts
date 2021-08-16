@@ -4,10 +4,10 @@ import GameObject from './GameObject'
 
 class Platform extends GameObject {
     update(): void {}
-    draw(): void { /* draw the wall here */ }
-    constructor(s: p5, engine: Matter.Engine) {
-        // Do some stuff
-        super(s, engine, Bodies.rectangle(300, 400, 10, 10, { isStatic: true }), 'green');
+
+    constructor(s: p5, engine: Matter.Engine, posX: number, posY: number, height: number, width: number, colour: string) {
+        super(s, engine, Bodies.rectangle(posX, posY, height, width, { isStatic: true }), colour);
+        //super(s, engine, Bodies.rectangle(300, 400, 10, 10, { isStatic: true }), 'green');
     }
 }
 

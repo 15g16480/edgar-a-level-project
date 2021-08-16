@@ -4,10 +4,11 @@ import GameObject from './GameObject'
 
 class Mob extends GameObject {
     update(): void {}
-    draw(): void { /* draw the wall here */ }
+
     isAlive: boolean;
-    constructor(s: p5, engine: Matter.Engine) {
-        super(s, engine, Bodies.rectangle(1100, 630, 40, 40, { inertia: Infinity, friction: 0 }), 'purple');
+    constructor(s: p5, engine: Matter.Engine, posX: number, posY: number, height: number, width: number, colour: string) {
+        // Do some stuff
+        super(s, engine, Bodies.rectangle(posX, posY, height, width, { isStatic: true, friction: 0 }), colour);
     }
 }
 

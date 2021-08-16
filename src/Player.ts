@@ -3,7 +3,7 @@ import * as p5 from 'p5'
 import GameObject from './GameObject'
 
 class Player extends GameObject {
-    draw(){};
+
     update() {
 
         //A
@@ -20,15 +20,12 @@ class Player extends GameObject {
     spawnx: number;
     spawny: number;
     //colour: string;
-    constructor(s: p5, engine: Engine) {
-        // Do some stuff
-        super(s, engine, Bodies.rectangle(400, 370, 40, 40, {
-            inertia: Infinity, friction: 0.002,
-        }), 'blue');
+    constructor(s: p5, engine: Matter.Engine, posX: number, posY: number, height: number, width: number, colour: string) {
+        super(s, engine, Bodies.rectangle(posX, posY, height, width, { isStatic: true , friction: 0.002}), colour);
+        //super(s, engine, Bodies.rectangle(400, 370, 40, 40, {inertia: Infinity, friction: 0.002,}), 'blue');
         this.lives = 3;
         this.spawnx = 400;
         this.spawny = 370;
-        // this.colour = 'red'
         Body.setMass(this.body, 4)
     }
 

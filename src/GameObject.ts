@@ -1,6 +1,7 @@
 import * as p5 from "p5";
 import { World, Body, Engine } from 'matter-js'
 import Object from './Object';
+import drawBody from "./drawBody";
 
 abstract class GameObject extends Object {
 
@@ -16,7 +17,7 @@ abstract class GameObject extends Object {
         this.colour = colour;
         World.add(engine.world, [this.body]);
     }
-    abstract draw(): void;
-    abstract update(): void;
+
+    draw(): void { drawBody(this.s, this.body, this.colour) }
 }
 export default GameObject

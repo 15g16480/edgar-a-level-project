@@ -4,10 +4,10 @@ import GameObject from './GameObject'
 
 class Checkpoint extends GameObject {
     update(): void {}
-    draw(): void { /* draw the wall here */ }
-    constructor(s: p5, engine: Matter.Engine) {
-        // Do some stuff
-        super(s, engine, Bodies.circle(1400, 440, 20, { isStatic: true }), 'green');
+
+    constructor(s: p5, engine: Matter.Engine, posX: number, posY: number, radius: number, colour: string) {
+        super(s, engine, Bodies.circle(posX, posY, radius, { isStatic: true }), colour);
+        //super(s, engine, Bodies.circle(1400, 440, 20, { isStatic: true }), 'green');
     }
 }
 export default Checkpoint
