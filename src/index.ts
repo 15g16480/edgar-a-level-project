@@ -9,7 +9,7 @@ import Object from './Object';
 import Mob from './Mob';
 import Bounds from './Bounds';
 import Checkpoint from './Bounds';
-import Platform from './PLatform';
+import Platform from './Platform';
 import Wall from './Wall';
 import Ground from './Ground';
 
@@ -84,12 +84,12 @@ let sketch = function (p: p5) {
         ground.push(new Ground(p, engine, 400, 410, 810, 30, 'blue'));
         ground.push(new Ground (p, engine, 1600, 670, 810, 30, 'blue'));
         ground.push(new Ground(p, engine, 480, 1000, 1000, 30, 'blue'));
-        //ground.push(new Ground(p, engine, 800, 670, 600, 30, 'green'));
+        ground.push(new Ground(p, engine, 800, 670, 600, 30, 'blue'));
         //ground.push(new Ground(p, engine, 800, 670, 600, 30, 'green'));
         mobs.push(new Mob(p, engine, 900, 630, 40, 40, 'orange'));
         mobs.push(new Mob(p, engine, 700, 630, 40, 40, 'orange'));
         checkpoints.push(new Checkpoint(p, engine, 1400, 440, 20, 20, 'yellow'));
-        checkpoints.push(new Checkpoint(p, engine, 800, 440, 20, 20, 'yellow'));
+        checkpoints.push(new Checkpoint(p, engine, 1200, 600, 20, 20, 'yellow'));
         walls.push(new Wall(p, engine, 0, 400, 100, 1000, 'blue'));
         //platforms.push(new Platform(p, engine, 300, 400, 10, 10, 'blue'));
         bounds.push(new Bounds(p, engine,-500, 1170, 10000, 500, 'blue'));

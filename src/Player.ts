@@ -15,13 +15,13 @@ class Player extends GameObject {
             Body.applyForce(this.body, this.body.position, { x: +0.002, y: 0 });
         }
     }
-    body: Body;
+    //body: Body;
     lives: number;
     spawnx: number;
     spawny: number;
     //colour: string;
     constructor(s: p5, engine: Matter.Engine, posX: number, posY: number, height: number, width: number, colour: string) {
-        super(s, engine, Bodies.rectangle(posX, posY, height, width, { isStatic: true , friction: 0.002}), colour);
+        super(s, engine, Bodies.rectangle(posX, posY, height, width, { friction: 0.002}), colour);
         //super(s, engine, Bodies.rectangle(400, 370, 40, 40, {inertia: Infinity, friction: 0.002,}), 'blue');
         this.lives = 3;
         this.spawnx = 400;
