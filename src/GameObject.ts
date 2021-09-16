@@ -4,7 +4,7 @@ import Object from './Object';
 import drawBody from "./drawBody";
 
 abstract class GameObject extends Object {
-
+    isAlive: boolean;
     body: Body;
     colour: string;
 
@@ -12,12 +12,22 @@ abstract class GameObject extends Object {
         engine: Engine,
         body: Body,
         colour: string) {
-        super(s);
+        super(s, engine);
         this.body = body;
         this.colour = colour;
+        this.isAlive = true;
         World.add(engine.world, [this.body]);
     }
 
-    draw(): void { drawBody(this.s, this.body, this.colour) }
+    kill() {
+        World.remove(this.engine.world, this.body);
+        this.isAlive = false;
+    }
+
+    draw(): void {
+        if (this.isAlive) {
+            drawBody(this.s, this.body, this.colour);
+        }
+    }
 }
 export default GameObject

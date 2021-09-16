@@ -1,3 +1,4 @@
+import { Engine } from "matter-js";
 import * as p5 from "p5";
 
 /**
@@ -8,9 +9,11 @@ import * as p5 from "p5";
  */
 abstract class Object {
     s: p5;
+    engine: Engine;
 
-    constructor(s: p5) {
+    constructor(s: p5, engine: Engine) {
         this.s = s;
+        this.engine = engine;
     }
 
     /**
