@@ -8,12 +8,13 @@ import GameObject from './GameObject';
 import Object from './Object';
 import Mob from './Mob';
 import Bounds from './Bounds';
-import Checkpoint from './Bounds';
+import Checkpoint from './Checkpoints';
 import Platform from './Platform';
 import Wall from './Wall';
 import Ground from './Ground';
 import SJump from './SJump';
 import Grav from './Grav';
+import FinishLine from './Finishline';
 
 // module aliases
 var Engine = Matter.Engine,
@@ -36,12 +37,20 @@ let sketch = function (p: p5) {
     let engine: Matter.Engine;
     //create bodies
     let player: Player;
-    let mobs: Mob[] = [];
-    let ground: Ground[] = [];
-    let checkpoints: Checkpoint[] = [];
-    let walls: Wall[] = [];
-    let platforms: Platform[] = [];
-    let bounds: Bounds[] = [];
+    let mobs1: Mob[] = [];
+    let mobs2: Mob[] = [];
+    let ground1: Ground[] = [];
+    let ground2: Ground[] = [];
+    let checkpoints1: Checkpoint[] = [];
+    let checkpoints2: Checkpoint[] = [];
+    let walls1: Wall[] = [];
+    let walls2: Wall[] = [];
+    let platforms1: Platform[] = [];
+    let platforms2: Platform[] = [];
+    let bounds1: Bounds[] = [];
+    let bounds2: Bounds[] = [];
+    let finishLine1: FinishLine;
+    let finishLine2: FinishLine;
     let sJump: SJump;
     let grav: Grav;
     let deathCount = 0;
@@ -58,6 +67,8 @@ let sketch = function (p: p5) {
     let invulnerablity = 0;
     let invulnerablilityTimer = 1000;
     let livesElem: p5.Element;
+    let level1 = true;
+    let level2 = false;
 
     p.setup = function () {
         p.frameRate(60);
@@ -67,38 +78,58 @@ let sketch = function (p: p5) {
         engine = Engine.create();
         //render.options.wireframes = false;
         // creating entities
-
         player = new Player(p, engine, 400, 370, 40, 40, 'green');
-        grav = new Grav(p, engine, 1400, 440, 20, 'green');
-        sJump = new SJump(p, engine, 1500, 440, 20, 'purple');
-        ground.push(new Ground(p, engine, 1600, 480, 810, 30, 'blue'));
-        ground.push(new Ground(p, engine, 400, 410, 810, 30, 'blue'));
-        ground.push(new Ground(p, engine, 2200, 670, 810, 30, 'blue'));
-        ground.push(new Ground(p, engine, 480, 1000, 1000, 30, 'blue'));
-        ground.push(new Ground(p, engine, 800, 670, 600, 30, 'blue'));
-        ground.push(new Ground(p, engine, 400, 0, 8000, 30, 'blue'));
-        
-        //ground.push(new Ground(p, engine, 800, 670, 600, 30, 'green'));
-        mobs.push(new Mob(p, engine, 900, 630, 40, 40, 'orange'));
-        mobs.push(new Mob(p, engine, 700, 630, 40, 40, 'orange'));
-        checkpoints.push(new Checkpoint(p, engine, 1600, 440, 20, 20, 'yellow'));
-        checkpoints.push(new Checkpoint(p, engine, 2400, 630, 20, 20, 'yellow'));
-        walls.push(new Wall(p, engine, 0, 400, 100, 1000, 'black'));
-        //platforms.push(new Platform(p, engine, 300, 400, 10, 10, 'blue'));
-        bounds.push(new Bounds(p, engine, -500, 1170, 10000, 500, 'blue'));
-
+        grav = new Grav(p, engine, 2900, 620, 20, 'green');
+        sJump = new SJump(p, engine, 1300, 620, 20, 'purple');
+        ground1.push(new Ground(p, engine, 2000, 480, 800, 30, 'blue'));
+        ground1.push(new Ground(p, engine, 400, 410, 800, 30, 'blue'));
+        ground1.push(new Ground(p, engine, 2800, 670, 800, 30, 'blue'));
+        ground1.push(new Ground(p, engine, 4000, 850, 800, 30, 'blue'));
+        ground1.push(new Ground(p, engine, 1200, 670, 600, 30, 'blue'));
+        ground1.push(new Ground(p, engine, 3300, 30, 600, 30, 'blue'));
+        bounds1.push(new Ground(p, engine, 400, 0, 30000, 30, 'blue'));
+        bounds1.push(new Bounds(p, engine, -500, 1170, 30000, 500, 'blue'));
+        mobs1.push(new Mob(p, engine, 1100, 630, 40, 40, 'orange'));
+        mobs1.push(new Mob(p, engine, 3000, 630, 40, 40, 'orange'));
+        checkpoints1.push(new Checkpoint(p, engine, 1900, 440, 20, 20, 'yellow'));
+        checkpoints1.push(new Checkpoint(p, engine, 2700, 630, 20, 20, 'yellow'));
+        walls1.push(new Wall(p, engine, 0, 400, 100, 1000, 'black'));
+        finishLine1 = new FinishLine(p, engine, 4000, 840, 300, 40, 'white');
+        ground2.push(new Ground(p, engine, 400, 480, 800, 30, 'blue'));
         livesElem = p.createDiv('Lives = 3');
         livesElem.position(20, 20);
         livesElem.style('color', 'white');
         //adding entities to world
-        ground.forEach(g => World.add(engine.world, g.body));
-        walls.forEach(w => World.add(engine.world, w.body));
-        mobs.forEach(m => World.add(engine.world, m.body));
-        bounds.forEach(b => World.add(engine.world, b.body));
-        platforms.forEach(p => World.add(engine.world, p.body));
-
+        if (level1 == true) {
+            ground1.forEach(g => World.add(engine.world, g.body));
+            walls1.forEach(w => World.add(engine.world, w.body));
+            mobs1.forEach(m => World.add(engine.world, m.body));
+            bounds1.forEach(b => World.add(engine.world, b.body));
+            platforms1.forEach(p => World.add(engine.world, p.body));
+        }
+        if (level1 == false) {
+            ground1.forEach(g => World.remove(engine.world, g.body));
+            walls1.forEach(w => World.remove(engine.world, w.body));
+            mobs1.forEach(m => World.remove(engine.world, m.body));
+            bounds1.forEach(b => World.remove(engine.world, b.body));
+            platforms1.forEach(p => World.remove(engine.world, p.body));
+        }
+        if (level2 == true) {
+            ground2.forEach(g => World.add(engine.world, g.body));
+            walls2.forEach(w => World.add(engine.world, w.body));
+            mobs2.forEach(m => World.add(engine.world, m.body));
+            bounds2.forEach(b => World.add(engine.world, b.body));
+            platforms2.forEach(p => World.add(engine.world, p.body));
+        }
+        if (level2 == false) {
+            ground2.forEach(g => World.remove(engine.world, g.body));
+            walls2.forEach(w => World.remove(engine.world, w.body));
+            mobs2.forEach(m => World.remove(engine.world, m.body));
+            bounds2.forEach(b => World.remove(engine.world, b.body));
+            platforms2.forEach(p => World.remove(engine.world, p.body));
+        }
         //collisions for checkpoint saving
-        checkpoints.forEach(c => {
+        checkpoints1.forEach(c => {
             Matter.Events.on(engine, "collisionStart", function (event) {
                 event.pairs
                     .filter(pair => pair.bodyA.id == player.body.id)
@@ -111,8 +142,8 @@ let sketch = function (p: p5) {
             });
         });
 
-        // ground collision
-        ground.forEach(g => {
+        // Player grounded collision
+        ground1.forEach(g => {
             Matter.Events.on(engine, "collisionStart", function (event) {
                 event.pairs
                     .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
@@ -136,15 +167,44 @@ let sketch = function (p: p5) {
         })
 
         //collisions for playing hit ceiling/floor
-        //bounds.forEach(b => {}
+        bounds1.forEach(b => {
+            Matter.Events.on(engine, "collisionStart", function (event) {
+                event.pairs
+                    .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
+                    .forEach(pair => {
+                        let outOfBounds = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
+                        if (outOfBounds.id == b.body.id) {
+                            death = true
+                        }
+                    });
+            });
+            //collision for mob falling off 
+            mobs1.forEach(m => {
+                Matter.Events.on(engine, "collisionStart", function (event) {
+                    event.pairs
+                        .filter(pair => pair.bodyA.id == b.body.id)
+                        .forEach(pair => {
+                            let collidingMobId = pair.bodyA.id == b.body.id ? pair.bodyB.id : pair.bodyA.id;
+                            let collidingMob = mobs1.find(m => m.body.id == collidingMobId);
+                            if (collidingMobId == m.body.id) {
+                                m.kill()
+                            }
+                        });
+                });
+            })
+        })
 
-        // player death
+        // Reaching finishline
         Matter.Events.on(engine, "collisionStart", function (event) {
             event.pairs
                 .filter(pair => pair.bodyA.id == player.body.id || pair.bodyB.id == player.body.id)
                 .forEach(pair => {
-                    let edgeOfVerticalMap = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
-                    if (edgeOfVerticalMap.id == 99) {
+                    let finishing = pair.bodyA.id == player.body.id ? pair.bodyB : pair.bodyA;
+                    if (finishing.id == finishLine1.body.id) {
+                        level1 = false
+                        level2 = true
+                        player.spawnx = 400
+                        player.spawny = 370
                         death = true;
                     }
                 });
@@ -182,13 +242,13 @@ let sketch = function (p: p5) {
                 });
         });
         //mob behaviour
-        mobs.forEach(m => {
+        mobs1.forEach(m => {
             Matter.Events.on(engine, "collisionStart", function (event) {
                 event.pairs
                     .filter(pair => pair.bodyA.id == player.body.id)
                     .forEach(pair => {
                         let collidingMobId = pair.bodyA.id == player.body.id ? pair.bodyB.id : pair.bodyA.id;
-                        let collidingMob = mobs.find(m => m.body.id == collidingMobId);
+                        let collidingMob = mobs1.find(m => m.body.id == collidingMobId);
                         let now = Date.now();
                         if (collidingMobId == m.body.id) {
                             if ((now - invulnerablity) > invulnerablilityTimer) {
@@ -199,9 +259,6 @@ let sketch = function (p: p5) {
                             }
                             if (Math.round(player.body.position.y) <= Math.round(m.body.position.y) - 30) {
                                 m.kill()
-                                //if( = false){
-                                //   m.colour = '20'
-                                //}
                             }
                         }
                     });
@@ -220,18 +277,34 @@ let sketch = function (p: p5) {
         sJump.draw();
         grav.draw();
         player.draw();
-        mobs.forEach(m => m.draw());
-        bounds.forEach(b => b.draw());
-        checkpoints.forEach(c => c.draw());
-        ground.forEach(g => g.draw());
-        platforms.forEach(p => p.draw());
-        walls.forEach(w => w.draw());
-
+        if (level1 = true) {
+            finishLine1.draw();
+            mobs1.forEach(m => m.draw());
+            bounds1.forEach(b => b.draw());
+            checkpoints1.forEach(c => c.draw());
+            ground1.forEach(g => g.draw());
+            platforms1.forEach(p => p.draw());
+            walls1.forEach(w => w.draw());
+        }
+        if (level2 == true) {
+            finishLine2.draw();
+            mobs2.forEach(m => m.draw());
+            bounds2.forEach(b => b.draw());
+            checkpoints2.forEach(c => c.draw());
+            ground2.forEach(g => g.draw());
+            platforms2.forEach(p => p.draw());
+            walls2.forEach(w => w.draw());
+        }
         //Player Health system
         if (player.lives == 0) {
             death = true
         }
         //Player death
+        if (death == true) {
+            sJump.power = false
+            grav.power = false
+            p.setup()
+        }
         if (death == true && deathCount == 0) {
             player.respawn();
             player.lives = 2
@@ -256,7 +329,7 @@ let sketch = function (p: p5) {
         }
 
         // //mob targetting
-        mobs.forEach(m => {
+        mobs1.forEach(m => {
             if (m.body.position.x > player.body.position.x) {
                 Matter.Body.applyForce(m.body, m.body.position, { x: -0.00005, y: 0 });
             }
@@ -330,7 +403,7 @@ let sketch = function (p: p5) {
             player.lives = player.lives - 1
             player.colour = 'red'
         }
-        else {player.colour = 'green'}
+        else { player.colour = 'green' }
         const prevlives = parseInt(livesElem.html().substring(8));
         livesElem.html('Lives = ' + (prevlives - 1));
         invulnerablity = now;

@@ -2,7 +2,7 @@ import { Body, Bodies, Engine } from 'matter-js';
 import * as p5 from 'p5'
 import GameObject from './GameObject'
 
-class Checkpoint extends GameObject {
+class FinishLine extends GameObject {
     update(): void {}
 
     constructor(s: p5, engine: Matter.Engine, posX: number, posY: number, height: number, width: number, colour: string) {
@@ -10,4 +10,4 @@ class Checkpoint extends GameObject {
         //super(s, engine, Bodies.circle(1400, 440, 20, { isStatic: true }), 'green');
     }
 }
-export default Checkpoint
+export default FinishLine
